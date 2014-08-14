@@ -121,6 +121,7 @@ void showClubInfo(GtkWidget *widget, gpointer *var)
     GtkWidget *clubWinLabelAlign;
     GtkWidget *clubLoseLabel;
     GtkWidget *clubLoseLabelAlign;
+    GtkWidget *contentBox;
     Variant *v;
     Club *c;
     ClubListNode *cl;
@@ -133,7 +134,6 @@ void showClubInfo(GtkWidget *widget, gpointer *var)
     c = (Club *)(v->v.pVoid);
     cl = searchClubName(data, c->name);
 
-    gtk_container_remove(GTK_CONTAINER(mainBox), contentBox);
     contentBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
     clubNameLabel = gtk_label_new(c->name);
@@ -191,8 +191,11 @@ void showClubInfo(GtkWidget *widget, gpointer *var)
         pl = pl->next;
     }
 
-    gtk_container_add(GTK_CONTAINER(mainBox), contentBox);
-    gtk_widget_show_all(contentBox);
+    gtk_container_remove(GTK_CONTAINER(mainBox), contentScrolledWindow);
+    contentScrolledWindow = gtk_scrolled_window_new(NULL, NULL);
+    gtk_container_add(GTK_CONTAINER(contentScrolledWindow), contentBox);
+    gtk_box_pack_start(GTK_BOX(mainBox), contentScrolledWindow, TRUE, TRUE, 0);
+    gtk_widget_show_all(contentScrolledWindow);
 }
 
 void showPlayerInfo(GtkWidget *widget, gpointer *var)
@@ -216,6 +219,7 @@ void showPlayerInfo(GtkWidget *widget, gpointer *var)
     GtkWidget *gameListLabelAlign;
     GtkWidget *gameListItem;
     GtkWidget *gameListItemAlign;
+    GtkWidget *contentBox;
     Variant *v;
     Player *p;
     PlayerList *pl;
@@ -225,7 +229,6 @@ void showPlayerInfo(GtkWidget *widget, gpointer *var)
     if (!var)
         return;
 
-    gtk_container_remove(GTK_CONTAINER(mainBox), contentBox);
     contentBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
     v = (Variant *)var;
@@ -291,8 +294,11 @@ void showPlayerInfo(GtkWidget *widget, gpointer *var)
         gl = gl->next;
     }
 
-    gtk_container_add(GTK_CONTAINER(mainBox), contentBox);
-    gtk_widget_show_all(contentBox);
+    gtk_container_remove(GTK_CONTAINER(mainBox), contentScrolledWindow);
+    contentScrolledWindow = gtk_scrolled_window_new(NULL, NULL);
+    gtk_container_add(GTK_CONTAINER(contentScrolledWindow), contentBox);
+    gtk_box_pack_start(GTK_BOX(mainBox), contentScrolledWindow, TRUE, TRUE, 0);
+    gtk_widget_show_all(contentScrolledWindow);
 }
 
 void showGameInfo(GtkWidget *widget, gpointer *var)
@@ -308,6 +314,7 @@ void showGameInfo(GtkWidget *widget, gpointer *var)
     GtkWidget *whitePlayerLabelAlign;
     GtkWidget *resultLabel;
     GtkWidget *resultLabelAlign;
+    GtkWidget *contentBox;
     Variant *v;
     Game *g;
     char label[80];
@@ -354,7 +361,6 @@ void showGameInfo(GtkWidget *widget, gpointer *var)
     }
     resultLabelAlign = gtk_alignment_new(0.1, 0, 0, 0);
 
-    gtk_container_remove(GTK_CONTAINER(mainBox), contentBox);
     contentBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
     gtk_container_add(GTK_CONTAINER(noLabelAlign), noLabel);
@@ -368,8 +374,11 @@ void showGameInfo(GtkWidget *widget, gpointer *var)
     gtk_container_add(GTK_CONTAINER(resultLabelAlign), resultLabel);
     gtk_box_pack_start(GTK_BOX(contentBox), resultLabelAlign, FALSE, FALSE, 0);
 
-    gtk_container_add(GTK_CONTAINER(mainBox), contentBox);
-    gtk_widget_show_all(contentBox);
+    gtk_container_remove(GTK_CONTAINER(mainBox), contentScrolledWindow);
+    contentScrolledWindow = gtk_scrolled_window_new(NULL, NULL);
+    gtk_container_add(GTK_CONTAINER(contentScrolledWindow), contentBox);
+    gtk_box_pack_start(GTK_BOX(mainBox), contentScrolledWindow, TRUE, TRUE, 0);
+    gtk_widget_show_all(contentScrolledWindow);
 }
 
 void stat(GtkWidget *widget, gpointer *var)
@@ -378,7 +387,7 @@ void stat(GtkWidget *widget, gpointer *var)
         return;
 
     statRoundNum(data->next);
-    statScore(games);
+    statScore(maxGameNo, games, clubs);
 }
 
 void querySelection(void)
@@ -397,8 +406,8 @@ void querySelection(void)
     GtkWidget *viewAllPlayersBtnAlign;
     GtkWidget *viewAllGamesBtn;
     GtkWidget *viewAllGamesBtnAlign;
+    GtkWidget *contentBox;
 
-    gtk_container_remove(GTK_CONTAINER(mainBox), contentBox);
     contentBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
     headingSpacer = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
@@ -435,8 +444,11 @@ void querySelection(void)
     g_signal_connect(G_OBJECT(viewAllPlayersBtn), "clicked", G_CALLBACK(showAllPlayers), NULL);
     g_signal_connect(G_OBJECT(viewAllGamesBtn), "clicked", G_CALLBACK(showAllGames), NULL);
 
-    gtk_container_add(GTK_CONTAINER(mainBox), contentBox);
-    gtk_widget_show_all(contentBox);
+    gtk_container_remove(GTK_CONTAINER(mainBox), contentScrolledWindow);
+    contentScrolledWindow = gtk_scrolled_window_new(NULL, NULL);
+    gtk_container_add(GTK_CONTAINER(contentScrolledWindow), contentBox);
+    gtk_box_pack_start(GTK_BOX(mainBox), contentScrolledWindow, TRUE, TRUE, 0);
+    gtk_widget_show_all(contentScrolledWindow);
 }
 
 void welcome(void)
@@ -451,8 +463,8 @@ void welcome(void)
     GtkWidget *loadLabel;
     GtkWidget *loadButton;
     GtkWidget *align;
+    GtkWidget *contentBox;
 
-    gtk_container_remove(GTK_CONTAINER(mainBox), contentBox);
     contentBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
     hLoadingBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
@@ -477,8 +489,11 @@ void welcome(void)
 
     g_signal_connect(G_OBJECT(loadButton), "clicked", G_CALLBACK(load), NULL);
 
-    gtk_container_add(GTK_CONTAINER(mainBox), contentBox);
-    gtk_widget_show_all(contentBox);
+    gtk_container_remove(GTK_CONTAINER(mainBox), contentScrolledWindow);
+    contentScrolledWindow = gtk_scrolled_window_new(NULL, NULL);
+    gtk_container_add(GTK_CONTAINER(contentScrolledWindow), contentBox);
+    gtk_box_pack_start(GTK_BOX(mainBox), contentScrolledWindow, TRUE, TRUE, 0);
+    gtk_widget_show_all(contentScrolledWindow);
 }
 
 void showAllClubs(GtkWidget *widget, gpointer *window)
@@ -488,6 +503,7 @@ void showAllClubs(GtkWidget *widget, gpointer *window)
     GtkWidget *headingAlign;
     GtkWidget *clubListItem;
     GtkWidget *clubListItemAlign;
+    GtkWidget *contentBox;
     PangoFontDescription *headingFont = pango_font_description_from_string ("Serif 30");
     Variant *v;
     Club *c;
@@ -498,7 +514,6 @@ void showAllClubs(GtkWidget *widget, gpointer *window)
     headingAlign = gtk_alignment_new(0.1, 0, 0, 0);
     gtk_widget_modify_font(heading, headingFont);
 
-    gtk_container_remove(GTK_CONTAINER(mainBox), contentBox);
     contentBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
     gtk_container_add(GTK_CONTAINER(headingAlign), heading);
@@ -514,8 +529,11 @@ void showAllClubs(GtkWidget *widget, gpointer *window)
         g_signal_connect(G_OBJECT(clubListItem), "clicked", G_CALLBACK(showClubInfo), (gpointer *)v);
     }
 
-    gtk_container_add(GTK_CONTAINER(mainBox), contentBox);
-    gtk_widget_show_all(contentBox);
+    gtk_container_remove(GTK_CONTAINER(mainBox), contentScrolledWindow);
+    contentScrolledWindow = gtk_scrolled_window_new(NULL, NULL);
+    gtk_container_add(GTK_CONTAINER(contentScrolledWindow), contentBox);
+    gtk_box_pack_start(GTK_BOX(mainBox), contentScrolledWindow, TRUE, TRUE, 0);
+    gtk_widget_show_all(contentScrolledWindow);
 }
 
 void showAllPlayers(GtkWidget *widget, gpointer *window)
@@ -525,6 +543,7 @@ void showAllPlayers(GtkWidget *widget, gpointer *window)
     GtkWidget *headingAlign;
     GtkWidget *playerListItem;
     GtkWidget *playerListItemAlign;
+    GtkWidget *contentBox;
     PangoFontDescription *headingFont = pango_font_description_from_string ("Serif 30");
     Variant *v;
     Player *p;
@@ -535,7 +554,6 @@ void showAllPlayers(GtkWidget *widget, gpointer *window)
     headingAlign = gtk_alignment_new(0.1, 0, 0, 0);
     gtk_widget_modify_font(heading, headingFont);
 
-    gtk_container_remove(GTK_CONTAINER(mainBox), contentBox);
     contentBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
     gtk_container_add(GTK_CONTAINER(headingAlign), heading);
@@ -551,8 +569,11 @@ void showAllPlayers(GtkWidget *widget, gpointer *window)
         g_signal_connect(G_OBJECT(playerListItem), "clicked", G_CALLBACK(showPlayerInfo), v);
     }
 
-    gtk_container_add(GTK_CONTAINER(mainBox), contentBox);
-    gtk_widget_show_all(contentBox);
+    gtk_container_remove(GTK_CONTAINER(mainBox), contentScrolledWindow);
+    contentScrolledWindow = gtk_scrolled_window_new(NULL, NULL);
+    gtk_container_add(GTK_CONTAINER(contentScrolledWindow), contentBox);
+    gtk_box_pack_start(GTK_BOX(mainBox), contentScrolledWindow, TRUE, TRUE, 0);
+    gtk_widget_show_all(contentScrolledWindow);
 }
 
 void showAllGames(GtkWidget *widget, gpointer *window)
@@ -562,6 +583,7 @@ void showAllGames(GtkWidget *widget, gpointer *window)
     GtkWidget *headingAlign;
     GtkWidget *gameListItem;
     GtkWidget *gameListItemAlign;
+    GtkWidget *contentBox;
     PangoFontDescription *headingFont = pango_font_description_from_string ("Serif 30");
     Variant *v;
     Game *g;
@@ -572,7 +594,6 @@ void showAllGames(GtkWidget *widget, gpointer *window)
     headingAlign = gtk_alignment_new(0.1, 0, 0, 0);
     gtk_widget_modify_font(heading, headingFont);
 
-    gtk_container_remove(GTK_CONTAINER(mainBox), contentBox);
     contentBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
     gtk_container_add(GTK_CONTAINER(headingAlign), heading);
@@ -588,8 +609,11 @@ void showAllGames(GtkWidget *widget, gpointer *window)
         g_signal_connect(G_OBJECT(gameListItem), "clicked", G_CALLBACK(showGameInfo), v);
     }
 
-    gtk_container_add(GTK_CONTAINER(mainBox), contentBox);
-    gtk_widget_show_all(contentBox);
+    gtk_container_remove(GTK_CONTAINER(mainBox), contentScrolledWindow);
+    contentScrolledWindow = gtk_scrolled_window_new(NULL, NULL);
+    gtk_container_add(GTK_CONTAINER(contentScrolledWindow), contentBox);
+    gtk_box_pack_start(GTK_BOX(mainBox), contentScrolledWindow, TRUE, TRUE, 0);
+    gtk_widget_show_all(contentScrolledWindow);
 }
 
 void quit(GtkWidget *widget, gpointer *window)
@@ -639,8 +663,6 @@ void load(GtkWidget *widget, gpointer *window)
 
 void initWindows(int *argc, char ***argv)
 {
-    mainBox;
-
     gtk_init(argc, argv);
 
     //Init main window
@@ -651,7 +673,8 @@ void initWindows(int *argc, char ***argv)
 
     //main box
     mainBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-    contentBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    contentScrolledWindow = gtk_scrolled_window_new(NULL, NULL);
+
     gtk_container_add(GTK_CONTAINER(mainWindow), mainBox);
 
     //Create menu bar instances
@@ -760,7 +783,9 @@ void initWindows(int *argc, char ***argv)
     g_signal_connect(G_OBJECT(menuStatClub), "activate", G_CALLBACK(stat), NULL);
 
     gtk_box_pack_start(GTK_BOX(mainBox), menu, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(mainBox), contentBox, FALSE, TRUE, 0);
+    //gtk_box_pack_start(GTK_BOX(mainBox), contentBox, FALSE, TRUE, 0);
+    //gtk_container_add(GTK_CONTAINER(contentScrolledWindow), contentBox);
+    gtk_box_pack_start(GTK_BOX(mainBox), contentScrolledWindow, TRUE, TRUE, 0);
 
     gtk_widget_show_all(mainWindow);
 

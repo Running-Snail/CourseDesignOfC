@@ -16,7 +16,7 @@
 
 GtkWidget *mainWindow;
 GtkWidget *mainBox;
-GtkWidget *contentBox;
+GtkWidget *contentScrolledWindow;
 
 GtkWidget *menu;
 

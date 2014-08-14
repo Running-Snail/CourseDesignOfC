@@ -4,14 +4,11 @@
 #include "datastruct.h"
 
 typedef struct _gameStat {
-    int16_t club1Id;
-    int16_t club2Id;
-    int16_t club1roundScore;
-    int16_t club2roundScore;
-    int16_t clubIdMasterWin; //主将局胜一方俱乐部的id
+    int16_t roundScore;    //场分
+    int8_t  doesMasterWin; //主将局赢没赢
 } GameStat;
 
 void statRoundNum(ClubList *cl);
-void statScore(DynamicArray *games);
+void statScore(int32_t maxGameNo, DynamicArray *games, DynamicArray *clubs);
 
 #endif

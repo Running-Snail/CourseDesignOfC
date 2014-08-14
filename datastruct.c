@@ -34,7 +34,7 @@ Club *getClubById(int32_t clubId)
     if (clubId<0 || clubId>=clubs->arrayLen)
         return NULL;
 
-    return (Game *)(dynamicGet(clubs, clubId)->v.pVoid);
+    return (Club *)(dynamicGet(clubs, clubId)->v.pVoid);
 }
 
 Club *printClub(Club *c)
@@ -204,7 +204,7 @@ ClubList *insertClubList(ClubList *head, ClubListNode *node)
 
 ClubList *printClubList(ClubList *head)
 {
-
+    return head;
 }
 
 char *sprintClubList(char *str, ClubList *head)
@@ -233,12 +233,12 @@ PlayerList *insertPlayerList(PlayerList *head, PlayerListNode *node)
 
 PlayerList *printPlayerList(PlayerList *head)
 {
-
+    return head;
 }
 
 char *sprintPlayerList(char *str, PlayerList *head)
 {
-
+    return str;
 }
 
 GameList *createGameList(void)
@@ -262,12 +262,12 @@ GameList *insertGameList(GameList *head, GameListNode *node)
 
 GameList *printGameList(GameList *head)
 {
-
+    return head;
 }
 
 char *sprintGameList(char *str, GameList *head)
 {
-
+    return str;
 }
 
 int32_t clubIdByPlayerId(int32_t playerId)
@@ -314,4 +314,6 @@ PlayerListNode *searchPlayerName(ClubList *head, char *playerName)
         }
         cl = cl->next;
     }
+
+    return NULL;
 }

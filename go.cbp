@@ -13,12 +13,16 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="`pkg-config --cflags --libs gtk+-3.0`" />
 				</Compiler>
+				<Linker>
+					<Add option="`pkg-config --cflags --libs gtk+-3.0`" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/go" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
-				<Option type="0" />
+				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
@@ -29,12 +33,9 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="`pkg-config gtk+-2.0 --cflags`" />
 			<Add option="-Wall" />
 		</Compiler>
-		<Linker>
-			<Add option="`pkg-config gtk+-2.0 --libs`" />
-		</Linker>
+		<Unit filename="README.md" />
 		<Unit filename="club" />
 		<Unit filename="controller.c">
 			<Option compilerVar="CC" />
@@ -68,6 +69,7 @@
 		<Unit filename="view.h" />
 		<Extensions>
 			<code_completion />
+			<envvars />
 			<debugger />
 		</Extensions>
 	</Project>
