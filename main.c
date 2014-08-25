@@ -7,6 +7,6 @@
 
 int main(int argc, char *argv[])
 {
-    initWindows(&argc, &argv);
+    goInitWindows(&argc, &argv);
     return 0;
 }

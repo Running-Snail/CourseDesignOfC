@@ -9,7 +9,7 @@
 
 #define READ_BUFFER_LEN 80
 
-int32_t readString(FILE *fin, char *dest);
+int readString(FILE *fin, char *dest);
 void ignoreChar(FILE *fin, char c);
 
 #endif

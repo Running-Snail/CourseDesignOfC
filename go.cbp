@@ -34,7 +34,11 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="`pkg-config --cflags --libs gtk+-3.0`" />
 		</Compiler>
+		<Linker>
+			<Add option="`pkg-config --cflags --libs gtk+-3.0`" />
+		</Linker>
 		<Unit filename="README.md" />
 		<Unit filename="club" />
 		<Unit filename="controller.c">

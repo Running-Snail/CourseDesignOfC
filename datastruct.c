@@ -1,6 +1,27 @@
 #include "datastruct.h"
 
-Club *updateClubName(Club *aim, char *name)
+Club *goCreateClub(void)
+{
+    Club *c;
+    c = (Club *)malloc(sizeof(Club));
+
+    c->id = 0;        //俱乐部id
+    c->name = NULL;       //俱乐部名称(主键)
+    c->coach = NULL;      //教练
+    c->roundScore = 0; //局分
+    c->gameScore = 0;  //场分
+    c->ranking = 0;    //排名
+    c->masterWinNum = 0;
+    c->fastWinNum = 0;
+    c->blackRoundNum = 0;
+    c->whiteRoundNum = 0;
+    c->blackWinNum = 0;
+    c->whiteWinNum = 0;
+
+    return c;
+}
+
+Club *goUpdateClubName(Club *aim, char *name)
 {
     if (name)
         aim->name = name;
@@ -8,28 +29,28 @@ Club *updateClubName(Club *aim, char *name)
 //    return ((name?(aim->name=name):0),aim);
 }
 
-Club *updateClubCoach(Club *aim, char *coach)
+Club *goUpdateClubCoach(Club *aim, char *coach)
 {
     if (coach)
         aim->coach = coach;
     return aim;
 }
 
-Club *updateClubRoundScore(Club *aim, int16_t roundScore)
+Club *goUpdateClubRoundScore(Club *aim, int roundScore)
 {
     if (roundScore>0)
         aim->roundScore = roundScore;
     return aim;
 }
 
-Club *updateClubGameScore(Club *aim, int16_t gameScore)
+Club *goUpdateClubGameScore(Club *aim, int gameScore)
 {
     if (gameScore>0)
         aim->gameScore = gameScore;
     return aim;
 }
 
-Club *getClubById(int32_t clubId)
+Club *goGetClubById(int clubId)
 {
     if (clubId<0 || clubId>=clubs->arrayLen)
         return NULL;
@@ -37,7 +58,7 @@ Club *getClubById(int32_t clubId)
     return (Club *)(dynamicGet(clubs, clubId)->v.pVoid);
 }
 
-Club *printClub(Club *c)
+Club *goPrintClub(Club *c)
 {
     if (!c)
         return NULL;
@@ -47,7 +68,7 @@ Club *printClub(Club *c)
     return c;
 }
 
-char *sprintClub(char *str, Club *c)
+char *goSprintClub(char *str, Club *c)
 {
     if (!str || !c)
         return NULL;
@@ -57,7 +78,26 @@ char *sprintClub(char *str, Club *c)
     return str;
 }
 
-Player *updatePlayerName(Player *aim, char *name)
+Player *goCreatePlayer(void)
+{
+    Player *p;
+
+    p = (Player *)malloc(sizeof(Player));
+
+    p->id = 0;
+    p->name = NULL;
+    p->clubId = 0;
+    p->clubName = NULL;
+    p->grade = 0;      //段位
+    p->roundNum = 0;   //参赛局数
+    p->winNum = 0;     //胜局数
+    p->winRate = 0.0;
+    p->isMaster = 0;   //是否是主将
+
+    return p;
+}
+
+Player *goUpdatePlayerName(Player *aim, char *name)
 {
     if (name)
         aim->name = name;
@@ -71,28 +111,28 @@ Player *updatePlayerClubName(Player *aim, char *clubName)
     return aim;
 }
 
-Player *updatePlayerGrade(Player *aim, int8_t grade)
+Player *goUpdatePlayerGrade(Player *aim, int grade)
 {
     if (grade>0)
         aim->grade = grade;
     return aim;
 }
 
-Player *updatePlayerRoundNum(Player *aim, int16_t roundNum)
+Player *goUpdatePlayerRoundNum(Player *aim, int roundNum)
 {
     if (roundNum>0)
         aim->roundNum = roundNum;
     return aim;
 }
 
-Player *updatePlayerWinNum(Player *aim, int16_t winNum)
+Player *goUpdatePlayerWinNum(Player *aim, int winNum)
 {
     if (winNum>0)
         aim->winNum = winNum;
     return aim;
 }
 
-Player *getPlayerById(int32_t playerId)
+Player *goGetPlayerById(int playerId)
 {
     if (playerId<0 || playerId>=players->arrayLen)
         return NULL;
@@ -100,17 +140,17 @@ Player *getPlayerById(int32_t playerId)
     return (Player *)(dynamicGet(players, playerId)->v.pVoid);
 }
 
-Player *printPlayer(Player *p)
+Player *goPrintPlayer(Player *p)
 {
     if (!p)
         return NULL;
 
-    printf("name:%s clubName:%s roundNum:%d winNum:%d\n", p->name, p->clubName, p->roundNum, p->winNum);
+    printf("name:%s clubName:%s roundNum:%d winNum:%d winRate:%.2f\n", p->name, p->clubName, p->roundNum, p->winNum, p->winRate);
 
     return p;
 }
 
-char *sprintPlayer(char *str, Player *p)
+char *goSprintPlayer(char *str, Player *p)
 {
     if (!p || !str)
         return NULL;
@@ -120,42 +160,60 @@ char *sprintPlayer(char *str, Player *p)
     return str;
 }
 
-Game *updateGameNo(Game *aim, int16_t no)
+Game *goCreateGame(void)
+{
+    Game *g;
+
+    g = (Game *)malloc(sizeof(Game));
+
+    g->id = 0;             //棋局的id
+    g->no = 0;             //场次
+    g->type = 0;           //局别
+    g->blackPlayer = NULL;    //黑棋棋手(外键)
+    g->blackPlayerId = 0; //黑棋棋手key
+    g->whitePlayer = NULL;    //白棋棋手(外键)
+    g->whitePlayerId = 0; //白棋棋手key
+    g->result = 0;         //胜负(0黑胜,1白胜)
+
+    return g;
+}
+
+Game *goUpdateGameNo(Game *aim, int no)
 {
     if (no>0)
         aim->no = no;
     return aim;
 }
 
-Game *updateGameType(Game *aim, int8_t type)
+Game *goUpdateGameType(Game *aim, int type)
 {
     if (type>=0)
         aim->type = type;
     return aim;
 }
 
-Game *updateGameBlackPlayer(Game *aim, char *blackPlayer)
+Game *goUpdateGameBlackPlayer(Game *aim, char *blackPlayer)
 {
     if (blackPlayer)
         aim->blackPlayer = blackPlayer;
     return aim;
 }
 
-Game *updateGameWhitePlayer(Game *aim, char *whitePlayer)
+Game *goUpdateGameWhitePlayer(Game *aim, char *whitePlayer)
 {
     if (whitePlayer)
         aim->whitePlayer = whitePlayer;
     return aim;
 }
 
-Game *updateGameResult(Game *aim, int8_t result)
+Game *goUpdateGameResult(Game *aim, int result)
 {
     if (result>=0)
         aim->result = result;
     return aim;
 }
 
-Game *getGameById(int32_t gameId)
+Game *goGetGameById(int gameId)
 {
     if (gameId<0 || gameId>=games->arrayLen)
         return NULL;
@@ -163,7 +221,7 @@ Game *getGameById(int32_t gameId)
     return (Game *)(dynamicGet(games, gameId)->v.pVoid);
 }
 
-Game *printGame(Game *g)
+Game *goPrintGame(Game *g)
 {
     if (!g)
         return NULL;
@@ -173,7 +231,79 @@ Game *printGame(Game *g)
     return g;
 }
 
-char *sprintGame(char *str, Game *g)
+DynamicArray *goQueryGameNo(DynamicArray *games, int no)
+{
+    int i;
+    DynamicArray *res = NULL;
+    Variant *v;
+    Game *g;
+
+    if (!games)
+        return NULL;
+
+    res = createDynamicArray();
+
+    for (i=0; i<games->arrayLen; i++) {
+        v = dynamicGet(games, i);
+        g = (Game *)(v->v.pVoid);
+
+        if (g->no == no) {
+            dynamicAppend(res, v);
+        }
+    }
+
+    return res;
+}
+
+DynamicArray *goQueryGameBlack(DynamicArray *games, char *black)
+{
+    int i;
+    DynamicArray *res = NULL;
+    Variant *v;
+    Game *g;
+
+    if (!games)
+        return NULL;
+
+    res = createDynamicArray();
+
+    for (i=0; i<games->arrayLen; i++) {
+        v = dynamicGet(games, i);
+        g = (Game *)(v->v.pVoid);
+
+        if (strstr(g->blackPlayer, black)!=NULL) {
+            dynamicAppend(res, v);
+        }
+    }
+
+    return res;
+}
+
+DynamicArray *goQueryGameWhite(DynamicArray *games, char *white)
+{
+    int i;
+    DynamicArray *res = NULL;
+    Variant *v;
+    Game *g;
+
+    if (!games)
+        return NULL;
+
+    res = createDynamicArray();
+
+    for (i=0; i<games->arrayLen; i++) {
+        v = dynamicGet(games, i);
+        g = (Game *)(v->v.pVoid);
+
+        if (strstr(g->whitePlayer, black)!=NULL) {
+            dynamicAppend(res, v);
+        }
+    }
+
+    return res;
+}
+
+char *goSprintGame(char *str, Game *g)
 {
     if (!g || !str)
         return NULL;
@@ -183,7 +313,7 @@ char *sprintGame(char *str, Game *g)
     return str;
 }
 
-ClubList *createClubList(void)
+ClubList *goCreateClubList(void)
 {
     ClubList *cl = (ClubList *)malloc(sizeof(ClubList));
     cl->data = NULL;
@@ -191,7 +321,7 @@ ClubList *createClubList(void)
     return cl;
 }
 
-ClubList *insertClubList(ClubList *head, ClubListNode *node)
+ClubList *goInsertClubList(ClubList *head, ClubListNode *node)
 {
     if (!head || !node)
         return NULL;
@@ -202,17 +332,17 @@ ClubList *insertClubList(ClubList *head, ClubListNode *node)
     return head;
 }
 
-ClubList *printClubList(ClubList *head)
+ClubList *goPrintClubList(ClubList *head)
 {
     return head;
 }
 
-char *sprintClubList(char *str, ClubList *head)
+char *goSprintClubList(char *str, ClubList *head)
 {
     return str;
 }
 
-PlayerList *createPlayerList(void)
+PlayerList *goCreatePlayerList(void)
 {
     PlayerList *pl = (PlayerList *)malloc(sizeof(PlayerList));
     pl->data = NULL;
@@ -220,7 +350,7 @@ PlayerList *createPlayerList(void)
     return pl;
 }
 
-PlayerList *insertPlayerList(PlayerList *head, PlayerListNode *node)
+PlayerList *goInsertPlayerList(PlayerList *head, PlayerListNode *node)
 {
     if (!head || !node)
         return NULL;
@@ -231,17 +361,17 @@ PlayerList *insertPlayerList(PlayerList *head, PlayerListNode *node)
     return head;
 }
 
-PlayerList *printPlayerList(PlayerList *head)
+PlayerList *goPrintPlayerList(PlayerList *head)
 {
     return head;
 }
 
-char *sprintPlayerList(char *str, PlayerList *head)
+char *goSprintPlayerList(char *str, PlayerList *head)
 {
     return str;
 }
 
-GameList *createGameList(void)
+GameList *goCreateGameList(void)
 {
     GameList *gl = (GameList *)malloc(sizeof(GameList));
     gl->data = NULL;
@@ -249,7 +379,7 @@ GameList *createGameList(void)
     return gl;
 }
 
-GameList *insertGameList(GameList *head, GameListNode *node)
+GameList *goInsertGameList(GameList *head, GameListNode *node)
 {
     if (!head || !node)
         return NULL;
@@ -260,17 +390,17 @@ GameList *insertGameList(GameList *head, GameListNode *node)
     return head;
 }
 
-GameList *printGameList(GameList *head)
+GameList *goPrintGameList(GameList *head)
 {
     return head;
 }
 
-char *sprintGameList(char *str, GameList *head)
+char *goSprintGameList(char *str, GameList *head)
 {
     return str;
 }
 
-int32_t clubIdByPlayerId(int32_t playerId)
+int clubIdByPlayerId(int playerId)
 {
     if (playerId<0 || playerId>players->arrayLen)
         return -1;
@@ -281,7 +411,7 @@ int32_t clubIdByPlayerId(int32_t playerId)
     return p->clubId;
 }
 
-ClubListNode *searchClubName(ClubList *head, char *clubName)
+ClubListNode *goSearchClubName(ClubList *head, char *clubName)
 {
     ClubListNode *n;
     if (!head || !clubName)
@@ -297,7 +427,7 @@ ClubListNode *searchClubName(ClubList *head, char *clubName)
     return n;
 }
 
-PlayerListNode *searchPlayerName(ClubList *head, char *playerName)
+PlayerListNode *goSearchPlayerName(ClubList *head, char *playerName)
 {
     ClubListNode *cl;
     PlayerListNode *pl;
@@ -316,4 +446,107 @@ PlayerListNode *searchPlayerName(ClubList *head, char *playerName)
     }
 
     return NULL;
+}
+
+DynamicArray *goQueryClubName(DynamicArray *clubs, char *name)
+{
+    DynamicArray *res = NULL;
+    int i;
+    Variant *v;
+    Club *c;
+
+    if (!clubs)
+        return NULL;
+
+    res = createDynamicArray();
+
+    for (i=0; i<clubs->arrayLen; i++) {
+        v = dynamicGet(clubs, i);
+        c = (Club *)(v->v.pVoid);
+
+        if (strstr(c->name, name)!=NULL) {
+            dynamicAppend(&res, v);
+        }
+    }
+
+    return res;
+}
+
+DynamicArray *goQueryPlayerName(DynamicArray *players, char *name)
+{
+    DynamicArray *res = NULL;
+    int i;
+    Variant *v;
+    Player *p;
+
+    if (!players)
+        return NULL;
+
+    res = createDynamicArray();
+
+    for (i=0; i<players->arrayLen; i++) {
+        v = dynamicGet(players, i);
+        p = (Player *)(v->v.pVoid);
+
+        if (strstr(p->name, name)!=NULL) {
+            dynamicAppend(&res, v);
+        }
+    }
+
+    return res;
+}
+
+DynamicArray *goQueryPlayerClub(DynamicArray *players, char *name)
+{
+    DynamicArray *res = NULL;
+    int i;
+    Variant *v;
+    Player *p;
+
+    if (!players)
+        return NULL;
+
+    res = createDynamicArray();
+
+    for (i=0; i<players->arrayLen; i++) {
+        v = dynamicGet(players, i);
+        p = (Player *)(v->v.pVoid);
+
+        if (strstr(p->clubName, name)!=NULL) {
+            dynamicAppend(&res, v);
+        }
+    }
+
+    return res;
+}
+
+DynamicArray *goQueryPlayerWin(DynamicArray *players, int lower, int upper)
+{
+    DynamicArray *res = NULL;
+
+    int i;
+    Variant *v;
+    Player *p;
+
+    if (!players)
+        return NULL;
+
+    if (lower < 0)
+        lower = 0;
+
+    if (upper < 0)
+        upper = 99999999;
+
+    res = createDynamicArray();
+
+    for (i=0; i<players->arrayLen; i++) {
+        v = dynamicGet(players, i);
+        p = (Player *)(v->v.pVoid);
+
+        if (p->winNum >= lower && p->winNum <= upper) {
+            dynamicAppend(&res, v);
+        }
+    }
+
+    return res;
 }

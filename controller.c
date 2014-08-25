@@ -1,15 +1,33 @@
 #include "controller.h"
 
-Club *readClubLine(FILE *fin)
+char *trim(char *str)
+{
+    char *end;
+
+    while(isspace(*str)) str++;
+
+    if (*str == 0)
+        return str;
+
+    end = str + strlen(str) -1;
+    while (end > str && isspace(*end))
+        end--;
+
+    *(end+1) = 0;
+
+    return str;
+}
+
+Club *goReadClubLine(FILE *fin)
 {
     Club *c;
     char buffer[READ_BUFFER_LEN] = {0};
-    int32_t len;
+    int len;
 
     if (!fin)
         return NULL;
 
-    if (!(c = (Club *)malloc(sizeof(Club))))
+    if (!(c = goCreateClub()))
         return NULL;
 
     len = readString(fin, buffer);
@@ -29,15 +47,15 @@ Club *readClubLine(FILE *fin)
     return c;
 }
 
-Player *readPlayerLine(FILE *fin)
+Player *goReadPlayerLine(FILE *fin)
 {
     Player *p;
     char buffer[READ_BUFFER_LEN] = {0};
-    int32_t len;
+    int len;
     if (!fin)
         return NULL;
 
-    if (!(p = (Player *)malloc(sizeof(Player))))
+    if (!(p = goCreatePlayer()))
         return NULL;
 
     len = readString(fin, buffer);
@@ -60,15 +78,15 @@ Player *readPlayerLine(FILE *fin)
     return p;
 }
 
-Game *readGameLine(FILE *fin)
+Game *goReadGameLine(FILE *fin)
 {
     Game *g;
     char buffer[READ_BUFFER_LEN] = {0};
-    int32_t len;
+    int len;
     if (!fin)
         return NULL;
 
-    if (!(g = (Game *)malloc(sizeof(Game))))
+    if (!(g = goCreateGame()))
         return NULL;
 
     fscanf(fin, "%d , %d", &(g->no), &(g->type));
@@ -92,10 +110,10 @@ Game *readGameLine(FILE *fin)
     return g;
 }
 
-ClubList *loadData(int32_t *error)
+ClubList *goViewLoadData(int *error)
 {
-    int32_t clubNum, playerNum, gameNum;
-    int32_t i, j;
+    int clubNum, playerNum, gagoMenum;
+    int i;
     Club *c;
     Player *p;
     Game *g;
@@ -111,11 +129,11 @@ ClubList *loadData(int32_t *error)
     //Read numbers
     fscanf(clubFile, "%d", &clubNum);
     fscanf(playerFile, "%d", &playerNum);
-    fscanf(gameFile, "%d", &gameNum);
+    fscanf(gameFile, "%d", &gagoMenum);
 
     //Read data
     for (i=0; i<clubNum; i++) {
-        c = readClubLine(clubFile);
+        c = goReadClubLine(clubFile);
         c->id = i;
         v = createVariant();
         v->v.pVoid = c;
@@ -123,7 +141,7 @@ ClubList *loadData(int32_t *error)
     }
 
     for (i=0; i<playerNum; i++) {
-        p = readPlayerLine(playerFile);
+        p = goReadPlayerLine(playerFile);
         p->id = i;
         v = createVariant();
         v->v.pVoid = p;
@@ -132,8 +150,8 @@ ClubList *loadData(int32_t *error)
 
     maxGameNo = 0;
 
-    for (i=0; i<gameNum; i++) {
-        g = readGameLine(gameFile);
+    for (i=0; i<gagoMenum; i++) {
+        g = goReadGameLine(gameFile);
         g->id = i;
         v = createVariant();
         v->v.pVoid = g;
@@ -142,36 +160,36 @@ ClubList *loadData(int32_t *error)
             maxGameNo = g->no;
     }
 
-    data = createLists(clubs, players, games);
+    dynamicDeepCopy(&sortedPlayers, players);
+
+    data = goCreateLists(clubs, players, games);
     return data;
 }
 
-ClubList *createLists(DynamicArray *clubs, DynamicArray *players, DynamicArray *games)
+ClubList *goCreateLists(DynamicArray *clubs, DynamicArray *players, DynamicArray *games)
 {
-    int32_t i, j;
+    int i;
     Club *c;
     ClubList *clubListHead;
-    ClubListNode *clubListCurrent, *cl;
+    ClubListNode *cl;
     Player *p;
-    PlayerList *playerListHead;
-    PlayerListNode *playerListCurrent, *pl;
+    PlayerListNode *pl;
     Game *g;
-    GameList *gameListHead;
-    GameListNode *gameListCurrent, *gl;
+    GameListNode *gl;
     Variant *v;
 
     //Create the list of clubs
-    clubListHead = createClubList();
+    clubListHead = goCreateClubList();
 
     //Insert every club into the list
     for (i=0; i<clubs->arrayLen; i++) {
         v = dynamicGet(clubs, i);
         c = (Club *)(v->v.pVoid);
-        cl = createClubListNode();
+        cl = goCreateClubListNode();
         cl->data = c;
         //Create empty list of players who are in the club
-        cl->playerListHead = createPlayerList();
-        insertClubList(clubListHead, cl);
+        cl->playerListHead = goCreatePlayerList();
+        goInsertClubList(clubListHead, cl);
     }
 
     //Construct player list
@@ -179,13 +197,14 @@ ClubList *createLists(DynamicArray *clubs, DynamicArray *players, DynamicArray *
         v = dynamicGet(players, i);
         p = (Player *)(v->v.pVoid);
         //Find the club by club's name
-        if (cl = searchClubName(clubListHead, p->clubName)) {
+        cl = goSearchClubName(clubListHead, p->clubName);
+        if (cl) {
             p->clubId = cl->data->id;
-            pl = createPlayerListNode();
+            pl = goCreatePlayerListNode();
             pl->data = p;
-            insertPlayerList(cl->playerListHead, pl);
+            goInsertPlayerList(cl->playerListHead, pl);
             //Create empty list of games which the player played
-            pl->gameListHead = createGameList();
+            pl->gameListHead = goCreateGameList();
         }
     }
 
@@ -194,21 +213,49 @@ ClubList *createLists(DynamicArray *clubs, DynamicArray *players, DynamicArray *
         v = dynamicGet(games, i);
         g = (Game *)(v->v.pVoid);
         //Search for the black player by name
-        if (pl = searchPlayerName(clubListHead, g->blackPlayer)) {
+        pl = goSearchPlayerName(clubListHead, g->blackPlayer);
+        if (pl) {
             g->blackPlayerId = pl->data->id;
-            gl = createGameListNode();
+            gl = goCreateGameListNode();
             gl->data = g;
-            insertGameList(pl->gameListHead, gl);
+            goInsertGameList(pl->gameListHead, gl);
         }
         //Search for the white player by name
-        if (pl = searchPlayerName(clubListHead, g->whitePlayer)) {
+        pl = goSearchPlayerName(clubListHead, g->whitePlayer);
+        if (pl) {
             g->whitePlayerId = pl->data->id;
-            gl = createGameListNode();
+            gl = goCreateGameListNode();
             gl->data = g;
-            insertGameList(pl->gameListHead, gl);
+            goInsertGameList(pl->gameListHead, gl);
         }
     }
 
     return clubListHead;
+}
+
+char *goGradeName(int grade)
+{
+    switch (grade) {
+    case 1:
+        return "初段";
+    case 2:
+        return "二段";
+    case 3:
+        return "三段";
+    case 4:
+        return "四段";
+    case 5:
+        return "五段";
+    case 6:
+        return "六段";
+    case 7:
+        return "七段";
+    case 8:
+        return "八段";
+    case 9:
+        return "九段";
+    }
+
+    return "";
 }
 

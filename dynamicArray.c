@@ -16,7 +16,7 @@ DynamicArray *createDynamicArray()
     return d;
 }
 
-DynamicArray *createCapacityDynamicArray(uint32_t capacity)
+DynamicArray *createCapacityDynamicArray(uint capacity)
 {
     DynamicArray *d;
     d = (DynamicArray *)malloc(sizeof(DynamicArray));
@@ -41,7 +41,24 @@ DynamicArray *dynamicCopy(DynamicArray *dest, DynamicArray *source)
     return dest;
 }
 
-DynamicArray *dynamicInsert(DynamicArray **arr, uint32_t index, Variant *value)
+DynamicArray *dynamicDeepCopy(DynamicArray **dest, DynamicArray *src)
+{
+    int i;
+
+    if (!src || !dest)
+        return NULL;
+
+    if (!(*dest))
+        *dest = createCapacityDynamicArray(src->capacity);
+
+    for (i=0; i<src->arrayLen; i++) {
+        dynamicInsert(dest, i, dynamicGet(src, i));
+    }
+
+    return *dest;
+}
+
+DynamicArray *dynamicInsert(DynamicArray **arr, uint index, Variant *value)
 {
     DynamicArray *newArr;
     if (!arr)
@@ -61,7 +78,14 @@ DynamicArray *dynamicInsert(DynamicArray **arr, uint32_t index, Variant *value)
     return *arr;
 }
 
-Variant *dynamicGet(DynamicArray *arr, uint32_t index)
+DynamicArray *dynamicAppend(DynamicArray **arr, Variant *value)
+{
+    if (!arr)
+        return NULL;
+    return dynamicInsert(arr, (*arr)->arrayLen, value);
+}
+
+Variant *dynamicGet(DynamicArray *arr, uint index)
 {
     if (!arr || index >= arr->arrayLen)
         return NULL;

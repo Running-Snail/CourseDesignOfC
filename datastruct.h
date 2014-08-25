@@ -9,62 +9,77 @@
 #include "dynamicArray.h"
 
 typedef struct _club {
-    int32_t id;        //俱乐部id
+    int id;        //俱乐部id
     char *  name;       //俱乐部名称(主键)
     char *  coach;      //教练
-    int16_t roundScore; //局分
-    int16_t gameScore;  //场分
-    int16_t ranking;    //排名
-    int16_t winNum;
-    int16_t roundNum;
+    int roundScore; //局分
+    int gameScore;  //场分
+    int ranking;    //排名
+    int masterWinNum;
+    int fastWinNum;
+    int blackRoundNum;
+    int whiteRoundNum;
+    int blackWinNum;
+    int whiteWinNum;
 } Club;
 
 typedef struct _player {
-    int32_t id;         //选手id
+    int id;         //选手id
     char *  name;       //棋手名称(主键)
     char *  clubName;   //所属俱乐部名称(外键)
-    int32_t clubId;    //俱乐部的key
-    int8_t  grade;      //段位
-    int16_t roundNum;   //参赛局数
-    int16_t winNum;     //胜局数
-    int8_t  isMaster;   //是否是主将
+    int clubId;    //俱乐部的key
+    int  grade;      //段位
+    int roundNum;   //参赛局数
+    int winNum;     //胜局数
+    float   winRate;
+    int  isMaster;   //是否是主将
 } Player;
 
 typedef struct _game {
-    int32_t id;             //棋局的id
-    int16_t no;             //场次
-    int8_t  type;           //局别
+    int id;             //棋局的id
+    int no;             //场次
+    int  type;           //局别
     char *  blackPlayer;    //黑棋棋手(外键)
-    int32_t blackPlayerId; //黑棋棋手key
+    int blackPlayerId; //黑棋棋手key
     char *  whitePlayer;    //白棋棋手(外键)
-    int32_t whitePlayerId; //白棋棋手key
-    int8_t  result;         //胜负(0黑胜,1白胜)
+    int whitePlayerId; //白棋棋手key
+    int  result;         //胜负(0黑胜,1白胜)
 } Game;
 
-Club *updateClubName(Club *aim, char *name);
-Club *updateClubCoach(Club *aim, char *coach);
-Club *updateClubRoundScore(Club *aim, int16_t roundScore);
-Club *updateClubGameScore(Club *aim, int16_t gameScore);
-Club *getClubById(int32_t clubId);
-Club *printClub(Club *c);
-char *sprintClub(char *str, Club *c);
+Club *goCreateClub(void);
+Club *goUpdateClubName(Club *aim, char *name);
+Club *goUpdateClubCoach(Club *aim, char *coach);
+Club *goUpdateClubRoundScore(Club *aim, int roundScore);
+Club *goUpdateClubGameScore(Club *aim, int gameScore);
+Club *goGetClubById(int clubId);
+Club *goPrintClub(Club *c);
+DynamicArray *goQueryClubName(DynamicArray *clubs, char *name);
+char *goSprintClub(char *str, Club *c);
 
-Player *updatePlayerName(Player *aim, char *name);
-Player *updatePlayerGrade(Player *aim, int8_t grade);
-Player *updatePlayerRoundNum(Player *aim, int16_t roundNum);
-Player *updatePlayerWinNum(Player *aim, int16_t winNum);
-Player *getPlayerById(int32_t playerId);
-Player *printPlayer(Player *p);
-char *sprintPlayer(char *str, Player *p);
+Player *goCreatePlayer(void);
+Player *goUpdatePlayerName(Player *aim, char *name);
+Player *goUpdatePlayerGrade(Player *aim, int grade);
+Player *goUpdatePlayerRoundNum(Player *aim, int roundNum);
+Player *goUpdatePlayerWinNum(Player *aim, int winNum);
+Player *goGetPlayerById(int playerId);
+Player *goPrintPlayer(Player *p);
+DynamicArray *goQueryPlayerName(DynamicArray *players, char *name);
+DynamicArray *goQueryPlayerClub(DynamicArray *players, char *name);
+DynamicArray *goQueryPlayerWin(DynamicArray *players, int lower, int upper);
+char *goSprintPlayer(char *str, Player *p);
 
-Game *updateGameNo(Game *aim, int16_t no);
-Game *updateGameType(Game *aim, int8_t type);
-Game *updateGameBlackPlayer(Game *aim, char *blackPlayer);
-Game *updateGameWhitePlayer(Game *aim, char *whitePlayer);
-Game *updateGameResult(Game *aim, int8_t result);
-Game *getGameById(int32_t gameId);
-Game *printGame(Game *g);
-char *sprintGame(char *str, Game *g);
+Game *goCreateGame(void);
+Game *goUpdateGameNo(Game *aim, int no);
+Game *goUpdateGameType(Game *aim, int type);
+Game *goUpdateGameBlackPlayer(Game *aim, char *blackPlayer);
+Game *goUpdateGameWhitePlayer(Game *aim, char *whitePlayer);
+Game *goUpdateGameResult(Game *aim, int result);
+Game *goGetGameById(int gameId);
+Game *goPrintGame(Game *g);
+DynamicArray *goQueryGameNo(DynamicArray *games, int no);
+DynamicArray *goQueryGameBlack(DynamicArray *games, char *black);
+DynamicArray *goQueryGameWhite(DynamicArray *games, char *white);
+char *goSprintGame(char *str, Game *g);
 
 typedef struct _gameList {
     Game *            data;
@@ -85,28 +100,29 @@ typedef struct _clubList {
 
 DynamicArray *clubs;
 DynamicArray *players;
+DynamicArray *sortedPlayers;
 DynamicArray *games;
 ClubList *data;
-int32_t maxGameNo;
+int maxGameNo;
 
-ClubList *createClubList(void);
-ClubList *insertClubList(ClubList *head, ClubListNode *node);
-ClubList *printClubList(ClubList *head);
-char *sprintClubList(char *str, ClubList *head);
-PlayerList *createPlayerList(void);
-PlayerList *insertPlayerList(PlayerList *head, PlayerListNode *node);
-PlayerList *printPlayerList(PlayerList *head);
-char *sprintPlayerList(char *str, PlayerList *head);
-GameList *createGameList(void);
-GameList *insertGameList(GameList *head, GameListNode *node);
-GameList *printGameList(GameList *head);
-char *sprintGameList(char *str, GameList *head);
+ClubList *goCreateClubList(void);
+ClubList *goInsertClubList(ClubList *head, ClubListNode *node);
+ClubList *goPrintClubList(ClubList *head);
+char *goSprintClubList(char *str, ClubList *head);
+PlayerList *goCreatePlayerList(void);
+PlayerList *goInsertPlayerList(PlayerList *head, PlayerListNode *node);
+PlayerList *goPrintPlayerList(PlayerList *head);
+char *goSprintPlayerList(char *str, PlayerList *head);
+GameList *goCreateGameList(void);
+GameList *goInsertGameList(GameList *head, GameListNode *node);
+GameList *goPrintGameList(GameList *head);
+char *goSprintGameList(char *str, GameList *head);
 
-ClubListNode *searchClubName(ClubList *head, char *clubName);
-PlayerListNode *searchPlayerName(ClubList *head, char *playerName);
+ClubListNode *goSearchClubName(ClubList *head, char *clubName);
+PlayerListNode *goSearchPlayerName(ClubList *head, char *playerName);
 
-#define createClubListNode   createClubList
-#define createPlayerListNode createPlayerList
-#define createGameListNode   createGameList
+#define goCreateClubListNode   goCreateClubList
+#define goCreatePlayerListNode goCreatePlayerList
+#define goCreateGameListNode   goCreateGameList
 
 #endif

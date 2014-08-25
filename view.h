@@ -6,80 +6,121 @@
 #include <stdlib.h>
 #include <gtk/gtk.h>
 
-#include "datastruct.h"
 #include "dynamicArray.h"
+#include "datastruct.h"
+#include "statistics.h"
 #include "controller.h"
 
 #define MAIN_WINDOW_TITLE "Go"
-#define MAIN_WINDOW_WIDTH 500
-#define MAIN_WINDOW_HEIGHT 600
+#define MAIN_WINDOW_DEFAULT_WIDTH_MD 500
+#define MAIN_WINDOW_DEFAULT_HEIGHT_MD 600
+#define MAIN_WINDOW_DEFAULT_WIDTH_LG 950
+#define MAIN_WINDOW_DEFAULT_HEIGHT_LG 800
 
-GtkWidget *mainWindow;
-GtkWidget *mainBox;
-GtkWidget *contentScrolledWindow;
+#define UNIFORM_MARGIN_SM 10
+#define UNIFORM_MARGIN_MD 20
+#define UNIFORM_MARGIN_LG 30
 
-GtkWidget *menu;
+typedef struct _entryChain {
+    GtkEntry *entry;
+    struct _entryChain *next;
+} EntryChain;
 
-GtkWidget *menuSystem;
-GtkWidget *menuSystemSub;
-GtkWidget *menuSystemLoad;
-GtkWidget *menuSystemQuit;
+GtkWidget *goMainWindow;
+GtkWidget *goMainBox;
+GtkWidget *goContentScrolledWindow;
 
-GtkWidget *menuQuery;
-GtkWidget *menuQuerySub;
+GtkWidget *goMenu;
 
-GtkWidget *menuQueryClub;
-GtkWidget *menuQueryClubSub;
-GtkWidget *menuQueryClubAll;
-GtkWidget *menuQueryClubName;
+GtkWidget *goMenuSystem;
+GtkWidget *goMenuSystemSub;
+GtkWidget *goMenuSystemgoViewLoad;
+GtkWidget *goMenuSystemgoViewQuit;
 
-GtkWidget *menuQueryPlayer;
-GtkWidget *menuQueryPlayerSub;
-GtkWidget *menuQueryPlayerAll;
-GtkWidget *menuQueryPlayerName;
-GtkWidget *menuQueryPlayerClub;
-GtkWidget *menuQueryPlayerWinNum;
+GtkWidget *goMenuQuery;
+GtkWidget *goMenuQuerySub;
 
-GtkWidget *menuQueryGame;
-GtkWidget *menuQueryGameSub;
-GtkWidget *menuQueryGameAll;
-GtkWidget *menuQueryGameNo;
-GtkWidget *menuQueryGameBlack;
-GtkWidget *menuQueryGameWhite;
-GtkWidget *menuQueryGameResult;
+GtkWidget *goMenuQueryClub;
+GtkWidget *goMenuQueryClubSub;
+GtkWidget *goMenuQueryClubAll;
+GtkWidget *goMenuQueryClubName;
 
-GtkWidget *menuEdit;
-GtkWidget *menuEditSub;
-GtkWidget *menuEditClub;
-GtkWidget *menuEditPlayer;
-GtkWidget *menuEditGame;
+GtkWidget *goMenuQueryPlayer;
+GtkWidget *goMenuQueryPlayerSub;
+GtkWidget *goMenuQueryPlayerAll;
+GtkWidget *goMenuQueryPlayerName;
+GtkWidget *goMenuQueryPlayerClub;
+GtkWidget *goMenuQueryPlayerWinNum;
 
-GtkWidget *menuStat;
-GtkWidget *menuStatSub;
-GtkWidget *menuStatClub;
-GtkWidget *menuStatPlayer;
-GtkWidget *menuStatGrade;
-GtkWidget *menuStatClubGame;
+GtkWidget *goMenuQueryGame;
+GtkWidget *goMenuQueryGameSub;
+GtkWidget *goMenuQueryGameAll;
+GtkWidget *goMenuQueryGameNo;
+GtkWidget *goMenuQueryGameBlack;
+GtkWidget *goMenuQueryGameWhite;
+GtkWidget *goMenuQueryGameResult;
 
-GtkWidget *createClubListItem(char *clubName, char *coach);
-GtkWidget *createPlayerListItem(char *name, char *clubName);
-GtkWidget *createPlayerListItemClubInfo(char *name, int8_t grade);
-GtkWidget *createGameListItem(int32_t no, char *blackPlayer, char *whitePlayer, int8_t result);
-GtkWidget *createGameListItemPlayerInfo(Game *g, char *playerName);
+GtkWidget *goMenuEdit;
+GtkWidget *goMenuEditSub;
+GtkWidget *goMenuEditClub;
+GtkWidget *goMenuEditPlayer;
+GtkWidget *goMenuEditGame;
 
-void removeBoxAllChild(GtkWidget *box);
+GtkWidget *goMenuStat;
+GtkWidget *goMenuStatSub;
+GtkWidget *goMenuStatClub;
+GtkWidget *goMenuStatPlayer;
+GtkWidget *goMenuStatGrade;
+GtkWidget *goMenuStatClubDetails;
 
-void querySelection(void);
-void welcome(void);
-void showAllClubs(GtkWidget *widget, gpointer *window);
-void showAllPlayers(GtkWidget *widget, gpointer *window);
-void showAllGames(GtkWidget *widget, gpointer *window);
-void showClubInfo(GtkWidget *widget, gpointer *var);
-void showPlayerInfo(GtkWidget *widget, gpointer *var);
-void showGameInfo(GtkWidget *widget, gpointer *var);
+GtkWidget *goClubNameQueryDialog;
+GtkWidget *goPlayerNameQueryDialog;
+GtkWidget *goPlayerClubQueryDialog;
+GtkWidget *goPlayerWinQueryDialog;
+GtkWidget *goGameNoQueryDialog;
+GtkWidget *goGameBlackQueryDialog;
+GtkWidget *goGameWhiteQueryDialog;
+
+GtkWidget *goCreateClubListItem(Club *c);
+GtkWidget *goCreatePlayerListItem(Player *p);
+GtkWidget *goCreatePlayerListItemClubInfo(Player *p);
+GtkWidget *goCreateGameListItem(Game *g);
+GtkWidget *goCreateGameListItemPlayerInfo(Game *g, Player *p);
+GtkWidget *goCreateClubNameQueryDialog();
+GtkWidget *goCreatePlayerNameQueryDialog();
+
+GtkWidget *goCreateClubNameQueryDialog(void);
+GtkWidget *goCreatePlayerNameQueryDialog(void);
+GtkWidget *goCreatePlayerClubQueryDialog(void);
+GtkWidget *goCreatePlayerWinQueryDialog(void);
+GtkWidget *goCreateGameNoQueryDialog(void);
+GtkWidget *goCreateGameBlackQueryDialog(void);
+GtkWidget *goCreateGameWhiteQueryDialog(void);
+
+void goViewQuerySelection(void);
+void goViewWelcome(void);
+void goStatAll(ClubList *data);
+void goViewShowAllClubs(GtkWidget *widget, gpointer *window);
+void goViewShowAllPlayers(GtkWidget *widget, gpointer *window);
+void goViewShowAllGames(GtkWidget *widget, gpointer *window);
+void goViewShowClubInfo(GtkWidget *widget, gpointer *var);
+void goViewShowPlayerInfo(GtkWidget *widget, gpointer *var);
+void goViewClubRankList(GtkWidget *widget, gpointer *var);
+void goViewPlayerRankList(GtkWidget *widget, gpointer *var);
+void goViewGradeStatList(GtkWidget *widget, gpointer *var);
+void goViewStatClubDetails(GtkWidget *widget, gpointer *var);
+void goViewShowGameInfo(GtkWidget *widget, gpointer *var);
+void goViewShowClubNameQuery(GtkWidget *widget, gpointer *var);
+void goViewShowPlayerNameQuery(GtkWidget *widget, gpointer *var);
+void goViewShowPlayerWinQuery(GtkWidget *widget, gpointer *var);
+void goClubNameQuery(GtkWidget *widget, gpointer *var);
+void goPlayerNameQuery(GtkWidget *widget, gpointer *var);
+void goPlayerClubQuery(GtkWidget *widget, gpointer *var);
+void goPlayerWinQuery(GtkWidget *widget, gpointer *var);
 void stat(GtkWidget *widget, gpointer *var);
-void quit(GtkWidget *widget, gpointer *window);
-void load(GtkWidget *widget, gpointer *window);
-void initWindows(int *argc, char ***argv);
+void goViewHideWindow(GtkWidget *widget, gpointer *var);
+void goViewQuit(GtkWidget *widget, gpointer *window);
+void goViewLoad(GtkWidget *widget, gpointer *window);
+void goInitWindows(int *argc, char ***argv);
 
 #endif

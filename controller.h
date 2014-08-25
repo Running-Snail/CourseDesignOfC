@@ -15,11 +15,14 @@
 #define PLAYER_FILENAME "player"
 #define GAME_FILENAME "game"
 
-Club *readClubLine(FILE *fin);
-Player *readPlayerLine(FILE *fin);
-Game *readGameLine(FILE *fin);
+Club *goReadClubLine(FILE *fin);
+Player *goReadPlayerLine(FILE *fin);
+Game *goReadGameLine(FILE *fin);
 
-ClubList *createLists(DynamicArray *clubs, DynamicArray *players, DynamicArray *games);
-ClubList *loadData(int32_t *error);
+ClubList *goCreateLists(DynamicArray *clubs, DynamicArray *players, DynamicArray *games);
+ClubList *goViewLoadData(int *error);
+
+char *goGradeName(int grade);
+char *trim(char *str);
 
 #endif
