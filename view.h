@@ -21,10 +21,13 @@
 #define UNIFORM_MARGIN_MD 20
 #define UNIFORM_MARGIN_LG 30
 
-typedef struct _entryChain {
-    GtkEntry *entry;
-    struct _entryChain *next;
-} EntryChain;
+#define UNIFORM_ROW_MARGIN 2
+#define UNIFORM_COLUMN_MARGIN 2
+
+typedef struct _inputChain {
+    GtkEntry *input;
+    struct _inputChain *next;
+} InputChain;
 
 GtkWidget *goMainWindow;
 GtkWidget *goMainBox;
@@ -65,6 +68,9 @@ GtkWidget *goMenuEditSub;
 GtkWidget *goMenuEditClub;
 GtkWidget *goMenuEditPlayer;
 GtkWidget *goMenuEditGame;
+GtkWidget *goMenuEditAddClub;
+GtkWidget *goMenuEditAddPlayer;
+GtkWidget *goMenuEditAddGame;
 
 GtkWidget *goMenuStat;
 GtkWidget *goMenuStatSub;
@@ -80,6 +86,17 @@ GtkWidget *goPlayerWinQueryDialog;
 GtkWidget *goGameNoQueryDialog;
 GtkWidget *goGameBlackQueryDialog;
 GtkWidget *goGameWhiteQueryDialog;
+GtkWidget *goGameResultQueryDialog;
+
+GtkWidget *goClubEditDialog;
+GtkWidget *goPlayerEditDialog;
+GtkWidget *goGameEditDialog;
+
+GtkWidget *goAddClubDialog;
+GtkWidget *goAddPlayerDialog;
+GtkWidget *goAddGameDialog;
+
+InputChain *goCreateInputChain(void);
 
 GtkWidget *goCreateClubListItem(Club *c);
 GtkWidget *goCreatePlayerListItem(Player *p);
@@ -89,13 +106,17 @@ GtkWidget *goCreateGameListItemPlayerInfo(Game *g, Player *p);
 GtkWidget *goCreateClubNameQueryDialog();
 GtkWidget *goCreatePlayerNameQueryDialog();
 
-GtkWidget *goCreateClubNameQueryDialog(void);
-GtkWidget *goCreatePlayerNameQueryDialog(void);
-GtkWidget *goCreatePlayerClubQueryDialog(void);
-GtkWidget *goCreatePlayerWinQueryDialog(void);
-GtkWidget *goCreateGameNoQueryDialog(void);
-GtkWidget *goCreateGameBlackQueryDialog(void);
-GtkWidget *goCreateGameWhiteQueryDialog(void);
+GtkWidget *goViewShowClubNameQueryDialog(GtkWidget *widget, gpointer *var);
+GtkWidget *goViewShowPlayerNameQueryDialog(GtkWidget *widget, gpointer *var);
+GtkWidget *goViewShowPlayerClubQueryDialog(GtkWidget *widget, gpointer *var);
+GtkWidget *goViewShowPlayerWinQueryDialog(GtkWidget *widget, gpointer *var);
+GtkWidget *goViewShowGameNoQueryDialog(GtkWidget *widget, gpointer *var);
+GtkWidget *goViewShowGameBlackQueryDialog(GtkWidget *widget, gpointer *var);
+GtkWidget *goViewShowGameWhiteQueryDialog(GtkWidget *widget, gpointer *var);
+GtkWidget *goViewShowGameResultQueryDialog(GtkWidget *widget, gpointer *var);
+GtkWidget *goViewShowAddClubDialog(GtkWidget *widget, gpointer *var);
+GtkWidget *goViewShowAddPlayerDialog(GtkWidget *widget, gpointer *var);
+GtkWidget *goViewShowAddGameDialog(GtkWidget *widget, gpointer *var);
 
 void goViewQuerySelection(void);
 void goViewWelcome(void);
@@ -110,6 +131,7 @@ void goViewPlayerRankList(GtkWidget *widget, gpointer *var);
 void goViewGradeStatList(GtkWidget *widget, gpointer *var);
 void goViewStatClubDetails(GtkWidget *widget, gpointer *var);
 void goViewShowGameInfo(GtkWidget *widget, gpointer *var);
+
 void goViewShowClubNameQuery(GtkWidget *widget, gpointer *var);
 void goViewShowPlayerNameQuery(GtkWidget *widget, gpointer *var);
 void goViewShowPlayerWinQuery(GtkWidget *widget, gpointer *var);
@@ -117,8 +139,26 @@ void goClubNameQuery(GtkWidget *widget, gpointer *var);
 void goPlayerNameQuery(GtkWidget *widget, gpointer *var);
 void goPlayerClubQuery(GtkWidget *widget, gpointer *var);
 void goPlayerWinQuery(GtkWidget *widget, gpointer *var);
-void stat(GtkWidget *widget, gpointer *var);
+void goGameNoQuery(GtkWidget *widget, gpointer *var);
+void goGameBlackQuery(GtkWidget *widget, gpointer *var);
+void goGameWhiteQuery(GtkWidget *widget, gpointer *var);
+void goGameResultQuery(GtkWidget *widget, gpointer *var);
+
+void goViewShowClubEditDialog(GtkWidget *widget, gpointer *var);
+void goViewShowPlayerEditDialog(GtkWidget *widget, gpointer *var);
+void goViewShowGameEditDialog(GtkWidget *widget, gpointer *var);
+
+void goUpdateClub(GtkWidget *widget, gpointer *var);
+void goUpdatePlayer(GtkWidget *widget, gpointer *var);
+void goUpdateGame(GtkWidget *widget, gpointer *var);
+
+void goAddClub(GtkWidget *widget, gpointer *var);
+void goAddPlayer(GtkWidget *widget, gpointer *var);
+void goAddGame(GtkWidget *widget, gpointer *var);
+
+void goViewShowWindow(GtkWidget *widget, gpointer *var);
 void goViewHideWindow(GtkWidget *widget, gpointer *var);
+void goDeleteWindow(GtkWidget *widget, gpointer *var);
 void goViewQuit(GtkWidget *widget, gpointer *window);
 void goViewLoad(GtkWidget *widget, gpointer *window);
 void goInitWindows(int *argc, char ***argv);

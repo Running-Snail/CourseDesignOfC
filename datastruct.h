@@ -21,6 +21,7 @@ typedef struct _club {
     int whiteRoundNum;
     int blackWinNum;
     int whiteWinNum;
+    int changed;
 } Club;
 
 typedef struct _player {
@@ -28,11 +29,12 @@ typedef struct _player {
     char *  name;       //棋手名称(主键)
     char *  clubName;   //所属俱乐部名称(外键)
     int clubId;    //俱乐部的key
-    int  grade;      //段位
+    int grade;      //段位
     int roundNum;   //参赛局数
     int winNum;     //胜局数
-    float   winRate;
-    int  isMaster;   //是否是主将
+    float winRate;
+    int isMaster;   //是否是主将
+    int changed;
 } Player;
 
 typedef struct _game {
@@ -47,39 +49,24 @@ typedef struct _game {
 } Game;
 
 Club *goCreateClub(void);
-Club *goUpdateClubName(Club *aim, char *name);
-Club *goUpdateClubCoach(Club *aim, char *coach);
-Club *goUpdateClubRoundScore(Club *aim, int roundScore);
-Club *goUpdateClubGameScore(Club *aim, int gameScore);
 Club *goGetClubById(int clubId);
 Club *goPrintClub(Club *c);
 DynamicArray *goQueryClubName(DynamicArray *clubs, char *name);
-char *goSprintClub(char *str, Club *c);
 
 Player *goCreatePlayer(void);
-Player *goUpdatePlayerName(Player *aim, char *name);
-Player *goUpdatePlayerGrade(Player *aim, int grade);
-Player *goUpdatePlayerRoundNum(Player *aim, int roundNum);
-Player *goUpdatePlayerWinNum(Player *aim, int winNum);
 Player *goGetPlayerById(int playerId);
 Player *goPrintPlayer(Player *p);
 DynamicArray *goQueryPlayerName(DynamicArray *players, char *name);
 DynamicArray *goQueryPlayerClub(DynamicArray *players, char *name);
 DynamicArray *goQueryPlayerWin(DynamicArray *players, int lower, int upper);
-char *goSprintPlayer(char *str, Player *p);
 
 Game *goCreateGame(void);
-Game *goUpdateGameNo(Game *aim, int no);
-Game *goUpdateGameType(Game *aim, int type);
-Game *goUpdateGameBlackPlayer(Game *aim, char *blackPlayer);
-Game *goUpdateGameWhitePlayer(Game *aim, char *whitePlayer);
-Game *goUpdateGameResult(Game *aim, int result);
 Game *goGetGameById(int gameId);
 Game *goPrintGame(Game *g);
 DynamicArray *goQueryGameNo(DynamicArray *games, int no);
 DynamicArray *goQueryGameBlack(DynamicArray *games, char *black);
 DynamicArray *goQueryGameWhite(DynamicArray *games, char *white);
-char *goSprintGame(char *str, Game *g);
+DynamicArray *goQueryGameResult(DynamicArray *games, int result);
 
 typedef struct _gameList {
     Game *            data;
@@ -104,6 +91,7 @@ DynamicArray *sortedPlayers;
 DynamicArray *games;
 ClubList *data;
 int maxGameNo;
+Variant *changingVariant;
 
 ClubList *goCreateClubList(void);
 ClubList *goInsertClubList(ClubList *head, ClubListNode *node);

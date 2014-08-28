@@ -1,8 +1,8 @@
 # depslib dependency file v1.0
-1408888347 source:/home/jay/Documents/cbprj/go/controller.c
+1409205507 source:/home/jay/Documents/cbprj/go/controller.c
 	"controller.h"
 
-1408888266 /home/jay/Documents/cbprj/go/controller.h
+1409120872 /home/jay/Documents/cbprj/go/controller.h
 	<inttypes.h>
 	<string.h>
 	<stdio.h>
@@ -12,11 +12,11 @@
 	"file.h"
 	"statistics.h"
 
-1408887766 /home/jay/Documents/cbprj/go/dynamicArray.h
+1409154355 /home/jay/Documents/cbprj/go/dynamicArray.h
 	<inttypes.h>
 	<stdlib.h>
 
-1408961572 /home/jay/Documents/cbprj/go/datastruct.h
+1409209066 /home/jay/Documents/cbprj/go/datastruct.h
 	<inttypes.h>
 	<string.h>
 	<stdio.h>
@@ -32,10 +32,10 @@
 1408120689 /home/jay/Documents/cbprj/go/goViewStatistics.h
 	"datastruct.h"
 
-1408961638 source:/home/jay/Documents/cbprj/go/datastruct.c
+1409206116 source:/home/jay/Documents/cbprj/go/datastruct.c
 	"datastruct.h"
 
-1408763753 source:/home/jay/Documents/cbprj/go/dynamicArray.c
+1409154019 source:/home/jay/Documents/cbprj/go/dynamicArray.c
 	"dynamicArray.h"
 
 1408383436 source:/home/jay/Documents/cbprj/go/file.c
@@ -2629,7 +2629,7 @@
 1401834133 /usr/include/gtk-3.0/gtk/deprecated/gtkvseparator.h
 	<gtk/gtkseparator.h>
 
-1408937741 /home/jay/Documents/cbprj/go/view.h
+1409208069 /home/jay/Documents/cbprj/go/view.h
 	<string.h>
 	<stdio.h>
 	<stdlib.h>
@@ -2642,7 +2642,7 @@
 1408379464 source:/home/jay/Documents/cbprj/go/goViewStatistics.c
 	"goViewStatistics.h"
 
-1408962824 source:/home/jay/Documents/cbprj/go/view.c
+1409208165 source:/home/jay/Documents/cbprj/go/view.c
 	"view.h"
 
 1396533891 /usr/lib/x86_64-linux-gnu/glib-2.0/include/glibconfig.h

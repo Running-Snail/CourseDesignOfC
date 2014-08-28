@@ -1,55 +1,39 @@
+/**
+ * @version 1.0.0
+ * @author  冀子豪
+ */
 #include "datastruct.h"
 
+/**
+ * 创建俱乐部结构体
+ * @return 创建的俱乐部信息
+ */
 Club *goCreateClub(void)
 {
     Club *c;
     c = (Club *)malloc(sizeof(Club));
 
-    c->id = 0;        //俱乐部id
-    c->name = NULL;       //俱乐部名称(主键)
-    c->coach = NULL;      //教练
-    c->roundScore = 0; //局分
-    c->gameScore = 0;  //场分
-    c->ranking = 0;    //排名
-    c->masterWinNum = 0;
-    c->fastWinNum = 0;
-    c->blackRoundNum = 0;
-    c->whiteRoundNum = 0;
-    c->blackWinNum = 0;
-    c->whiteWinNum = 0;
+    c->id            = 0;    //俱乐部id
+    c->name          = NULL; //俱乐部名称(主键)
+    c->coach         = NULL; //教练
+    c->roundScore    = 0;    //局分
+    c->gameScore     = 0;    //场分
+    c->ranking       = 0;    //排名
+    c->masterWinNum  = 0;    //主将局胜利数
+    c->fastWinNum    = 0;    //快棋局胜利数
+    c->blackRoundNum = 0;    //执黑局数
+    c->whiteRoundNum = 0;    //执白局数
+    c->blackWinNum   = 0;    //执黑胜利数
+    c->whiteWinNum   = 0;    //执白胜利数
 
     return c;
 }
 
-Club *goUpdateClubName(Club *aim, char *name)
-{
-    if (name)
-        aim->name = name;
-    return aim;
-//    return ((name?(aim->name=name):0),aim);
-}
-
-Club *goUpdateClubCoach(Club *aim, char *coach)
-{
-    if (coach)
-        aim->coach = coach;
-    return aim;
-}
-
-Club *goUpdateClubRoundScore(Club *aim, int roundScore)
-{
-    if (roundScore>0)
-        aim->roundScore = roundScore;
-    return aim;
-}
-
-Club *goUpdateClubGameScore(Club *aim, int gameScore)
-{
-    if (gameScore>0)
-        aim->gameScore = gameScore;
-    return aim;
-}
-
+/**
+ * 根据club的id获取俱乐部信息
+ * @param  clubId 俱乐部id
+ * @return        获取的俱乐部结构体指针
+ */
 Club *goGetClubById(int clubId)
 {
     if (clubId<0 || clubId>=clubs->arrayLen)
@@ -58,6 +42,11 @@ Club *goGetClubById(int clubId)
     return (Club *)(dynamicGet(clubs, clubId)->v.pVoid);
 }
 
+/**
+ * 输出俱乐部信息
+ * @param  c 要打印的俱乐部
+ * @return   输入的俱乐部
+ */
 Club *goPrintClub(Club *c)
 {
     if (!c)
@@ -68,6 +57,12 @@ Club *goPrintClub(Club *c)
     return c;
 }
 
+/**
+ * 输出俱乐部信息
+ * @param  str 要打印到的字符串指针
+ * @param  c   要打印的俱乐部
+ * @return     打印到的字符串指针
+ */
 char *goSprintClub(char *str, Club *c)
 {
     if (!str || !c)
@@ -78,60 +73,34 @@ char *goSprintClub(char *str, Club *c)
     return str;
 }
 
+/**
+ * 创建选手结构体
+ * @return 创建的选手结构体指针
+ */
 Player *goCreatePlayer(void)
 {
     Player *p;
 
     p = (Player *)malloc(sizeof(Player));
 
-    p->id = 0;
-    p->name = NULL;
-    p->clubId = 0;
-    p->clubName = NULL;
-    p->grade = 0;      //段位
-    p->roundNum = 0;   //参赛局数
-    p->winNum = 0;     //胜局数
-    p->winRate = 0.0;
-    p->isMaster = 0;   //是否是主将
+    p->id       = 0;    //选手id
+    p->name     = NULL; //选手名字
+    p->clubId   = 0;    //选手俱乐部id
+    p->clubName = NULL; //选手俱乐部名字
+    p->grade    = 0;    //段位
+    p->roundNum = 0;    //参赛局数
+    p->winNum   = 0;    //胜局数
+    p->winRate  = 0.0;  //胜率
+    p->isMaster = 0;    //是否是主将
 
     return p;
 }
 
-Player *goUpdatePlayerName(Player *aim, char *name)
-{
-    if (name)
-        aim->name = name;
-    return aim;
-}
-
-Player *updatePlayerClubName(Player *aim, char *clubName)
-{
-    if (clubName)
-        aim->clubName = clubName;
-    return aim;
-}
-
-Player *goUpdatePlayerGrade(Player *aim, int grade)
-{
-    if (grade>0)
-        aim->grade = grade;
-    return aim;
-}
-
-Player *goUpdatePlayerRoundNum(Player *aim, int roundNum)
-{
-    if (roundNum>0)
-        aim->roundNum = roundNum;
-    return aim;
-}
-
-Player *goUpdatePlayerWinNum(Player *aim, int winNum)
-{
-    if (winNum>0)
-        aim->winNum = winNum;
-    return aim;
-}
-
+/**
+ * 根据选手id获取选手
+ * @param  playerId 选手id
+ * @return          获取的选手结构体指针
+ */
 Player *goGetPlayerById(int playerId)
 {
     if (playerId<0 || playerId>=players->arrayLen)
@@ -140,6 +109,11 @@ Player *goGetPlayerById(int playerId)
     return (Player *)(dynamicGet(players, playerId)->v.pVoid);
 }
 
+/**
+ * 输出选手信息
+ * @param  p 要打印的选手
+ * @return   传入的选手
+ */
 Player *goPrintPlayer(Player *p)
 {
     if (!p)
@@ -150,6 +124,12 @@ Player *goPrintPlayer(Player *p)
     return p;
 }
 
+/**
+ * 输出选手信息
+ * @param  str 要输出的目标字符串
+ * @param  p   选手
+ * @return     输出的字符串指针
+ */
 char *goSprintPlayer(char *str, Player *p)
 {
     if (!p || !str)
@@ -160,59 +140,33 @@ char *goSprintPlayer(char *str, Player *p)
     return str;
 }
 
+/**
+ * 创建比赛结构体
+ * @return 创建的比赛结构体指针
+ */
 Game *goCreateGame(void)
 {
     Game *g;
 
     g = (Game *)malloc(sizeof(Game));
 
-    g->id = 0;             //棋局的id
-    g->no = 0;             //场次
-    g->type = 0;           //局别
-    g->blackPlayer = NULL;    //黑棋棋手(外键)
-    g->blackPlayerId = 0; //黑棋棋手key
-    g->whitePlayer = NULL;    //白棋棋手(外键)
-    g->whitePlayerId = 0; //白棋棋手key
-    g->result = 0;         //胜负(0黑胜,1白胜)
+    g->id            = 0;    //棋局的id
+    g->no            = 0;    //场次
+    g->type          = 0;    //局别
+    g->blackPlayer   = NULL; //黑棋棋手(外键)
+    g->blackPlayerId = 0;    //黑棋棋手key
+    g->whitePlayer   = NULL; //白棋棋手(外键)
+    g->whitePlayerId = 0;    //白棋棋手key
+    g->result        = 0;    //胜负(0黑胜,1白胜)
 
     return g;
 }
 
-Game *goUpdateGameNo(Game *aim, int no)
-{
-    if (no>0)
-        aim->no = no;
-    return aim;
-}
-
-Game *goUpdateGameType(Game *aim, int type)
-{
-    if (type>=0)
-        aim->type = type;
-    return aim;
-}
-
-Game *goUpdateGameBlackPlayer(Game *aim, char *blackPlayer)
-{
-    if (blackPlayer)
-        aim->blackPlayer = blackPlayer;
-    return aim;
-}
-
-Game *goUpdateGameWhitePlayer(Game *aim, char *whitePlayer)
-{
-    if (whitePlayer)
-        aim->whitePlayer = whitePlayer;
-    return aim;
-}
-
-Game *goUpdateGameResult(Game *aim, int result)
-{
-    if (result>=0)
-        aim->result = result;
-    return aim;
-}
-
+/**
+ * 根据比赛Id获取比赛结构体指针
+ * @param  gameId 比赛Id
+ * @return        获取的比赛结构体指针
+ */
 Game *goGetGameById(int gameId)
 {
     if (gameId<0 || gameId>=games->arrayLen)
@@ -221,6 +175,11 @@ Game *goGetGameById(int gameId)
     return (Game *)(dynamicGet(games, gameId)->v.pVoid);
 }
 
+/**
+ * 输出比赛信息
+ * @param  g 要输出的比赛信息
+ * @return   输入的比赛结构体指针
+ */
 Game *goPrintGame(Game *g)
 {
     if (!g)
@@ -231,6 +190,12 @@ Game *goPrintGame(Game *g)
     return g;
 }
 
+/**
+ * 查询场次为no的比赛
+ * @param  games 保存比赛的动态数组
+ * @param  no    比赛的场次
+ * @return       保存所有比赛场次为no的动态数组
+ */
 DynamicArray *goQueryGameNo(DynamicArray *games, int no)
 {
     int i;
@@ -248,13 +213,19 @@ DynamicArray *goQueryGameNo(DynamicArray *games, int no)
         g = (Game *)(v->v.pVoid);
 
         if (g->no == no) {
-            dynamicAppend(res, v);
+            dynamicAppend(&res, v);
         }
     }
 
     return res;
 }
 
+/**
+ * 查询执黑选手为black的比赛
+ * @param  games 保存比赛的动态数组
+ * @param  black 执黑选手的姓名
+ * @return       查询结果的动态数组
+ */
 DynamicArray *goQueryGameBlack(DynamicArray *games, char *black)
 {
     int i;
@@ -272,13 +243,19 @@ DynamicArray *goQueryGameBlack(DynamicArray *games, char *black)
         g = (Game *)(v->v.pVoid);
 
         if (strstr(g->blackPlayer, black)!=NULL) {
-            dynamicAppend(res, v);
+            dynamicAppend(&res, v);
         }
     }
 
     return res;
 }
 
+/**
+ * 查询执白选手为white的比赛
+ * @param  games 保存比赛信息的动态数组
+ * @param  white 执白选手的姓名
+ * @return       查询的结果
+ */
 DynamicArray *goQueryGameWhite(DynamicArray *games, char *white)
 {
     int i;
@@ -295,14 +272,20 @@ DynamicArray *goQueryGameWhite(DynamicArray *games, char *white)
         v = dynamicGet(games, i);
         g = (Game *)(v->v.pVoid);
 
-        if (strstr(g->whitePlayer, black)!=NULL) {
-            dynamicAppend(res, v);
+        if (strstr(g->whitePlayer, white)!=NULL) {
+            dynamicAppend(&res, v);
         }
     }
 
     return res;
 }
 
+/**
+ * 输出比赛信息
+ * @param  str 要输出到的字符串
+ * @param  g   要输出的比赛
+ * @return     输出的字符串
+ */
 char *goSprintGame(char *str, Game *g)
 {
     if (!g || !str)
@@ -313,14 +296,26 @@ char *goSprintGame(char *str, Game *g)
     return str;
 }
 
+/**
+ * 创建俱乐部链表结构体
+ * @return 创建的俱乐部链表结构体指针
+ */
 ClubList *goCreateClubList(void)
 {
     ClubList *cl = (ClubList *)malloc(sizeof(ClubList));
     cl->data = NULL;
     cl->next = NULL;
+    //创建空的选手信息链
+    cl->playerListHead = goCreatePlayerList();
     return cl;
 }
 
+/**
+ * 插入俱乐部链表
+ * @param  head 要插入到的俱乐部链表
+ * @param  node 要插入的俱乐部链表结点
+ * @return      俱乐部链表
+ */
 ClubList *goInsertClubList(ClubList *head, ClubListNode *node)
 {
     if (!head || !node)
@@ -332,24 +327,25 @@ ClubList *goInsertClubList(ClubList *head, ClubListNode *node)
     return head;
 }
 
-ClubList *goPrintClubList(ClubList *head)
-{
-    return head;
-}
-
-char *goSprintClubList(char *str, ClubList *head)
-{
-    return str;
-}
-
+/**
+ * 创建选手信息链
+ * @return 创建的选手信息链
+ */
 PlayerList *goCreatePlayerList(void)
 {
     PlayerList *pl = (PlayerList *)malloc(sizeof(PlayerList));
     pl->data = NULL;
     pl->next = NULL;
+    pl->gameListHead = goCreateGameList();
     return pl;
 }
 
+/**
+ * 插入选手信息链
+ * @param  head 要插入的选手信息链
+ * @param  node 要插入的选手信息
+ * @return      选手信息链
+ */
 PlayerList *goInsertPlayerList(PlayerList *head, PlayerListNode *node)
 {
     if (!head || !node)
@@ -361,16 +357,10 @@ PlayerList *goInsertPlayerList(PlayerList *head, PlayerListNode *node)
     return head;
 }
 
-PlayerList *goPrintPlayerList(PlayerList *head)
-{
-    return head;
-}
-
-char *goSprintPlayerList(char *str, PlayerList *head)
-{
-    return str;
-}
-
+/**
+ * 闯将比赛信息链
+ * @return 创建的比赛信息链
+ */
 GameList *goCreateGameList(void)
 {
     GameList *gl = (GameList *)malloc(sizeof(GameList));
@@ -379,6 +369,12 @@ GameList *goCreateGameList(void)
     return gl;
 }
 
+/**
+ * 插入到比赛信息链
+ * @param  head 要插入的比赛信息链表
+ * @param  node 要插入的比赛
+ * @return      比赛信息链
+ */
 GameList *goInsertGameList(GameList *head, GameListNode *node)
 {
     if (!head || !node)
@@ -390,16 +386,11 @@ GameList *goInsertGameList(GameList *head, GameListNode *node)
     return head;
 }
 
-GameList *goPrintGameList(GameList *head)
-{
-    return head;
-}
-
-char *goSprintGameList(char *str, GameList *head)
-{
-    return str;
-}
-
+/**
+ * 根据选手id获取俱乐部id
+ * @param  playerId 选手id
+ * @return          俱乐部id
+ */
 int clubIdByPlayerId(int playerId)
 {
     if (playerId<0 || playerId>players->arrayLen)
@@ -411,6 +402,12 @@ int clubIdByPlayerId(int playerId)
     return p->clubId;
 }
 
+/**
+ *
+ * @param  head
+ * @param  clubName
+ * @return
+ */
 ClubListNode *goSearchClubName(ClubList *head, char *clubName)
 {
     ClubListNode *n;
@@ -427,6 +424,12 @@ ClubListNode *goSearchClubName(ClubList *head, char *clubName)
     return n;
 }
 
+/**
+ *
+ * @param  head
+ * @param  playerName
+ * @return
+ */
 PlayerListNode *goSearchPlayerName(ClubList *head, char *playerName)
 {
     ClubListNode *cl;
@@ -448,6 +451,12 @@ PlayerListNode *goSearchPlayerName(ClubList *head, char *playerName)
     return NULL;
 }
 
+/**
+ *
+ * @param  clubs
+ * @param  name
+ * @return
+ */
 DynamicArray *goQueryClubName(DynamicArray *clubs, char *name)
 {
     DynamicArray *res = NULL;
@@ -472,6 +481,12 @@ DynamicArray *goQueryClubName(DynamicArray *clubs, char *name)
     return res;
 }
 
+/**
+ *
+ * @param  players
+ * @param  name
+ * @return
+ */
 DynamicArray *goQueryPlayerName(DynamicArray *players, char *name)
 {
     DynamicArray *res = NULL;
@@ -496,6 +511,12 @@ DynamicArray *goQueryPlayerName(DynamicArray *players, char *name)
     return res;
 }
 
+/**
+ *
+ * @param  players
+ * @param  name
+ * @return
+ */
 DynamicArray *goQueryPlayerClub(DynamicArray *players, char *name)
 {
     DynamicArray *res = NULL;
@@ -520,6 +541,13 @@ DynamicArray *goQueryPlayerClub(DynamicArray *players, char *name)
     return res;
 }
 
+/**
+ *
+ * @param  players
+ * @param  lower
+ * @param  upper
+ * @return
+ */
 DynamicArray *goQueryPlayerWin(DynamicArray *players, int lower, int upper)
 {
     DynamicArray *res = NULL;
@@ -544,6 +572,36 @@ DynamicArray *goQueryPlayerWin(DynamicArray *players, int lower, int upper)
         p = (Player *)(v->v.pVoid);
 
         if (p->winNum >= lower && p->winNum <= upper) {
+            dynamicAppend(&res, v);
+        }
+    }
+
+    return res;
+}
+
+/**
+ *
+ * @param  games
+ * @param  result
+ * @return
+ */
+DynamicArray *goQueryGameResult(DynamicArray *games, int result)
+{
+    int i;
+    DynamicArray *res = NULL;
+    Variant *v;
+    Game *g;
+
+    if (!games)
+        return NULL;
+
+    res = createDynamicArray();
+
+    for (i=0; i<games->arrayLen; i++) {
+        v = dynamicGet(games, i);
+        g = (Game *)(v->v.pVoid);
+
+        if (g->result == result) {
             dynamicAppend(&res, v);
         }
     }
