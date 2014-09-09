@@ -1,6 +1,7 @@
 #ifndef VIEW_H
 #define VIEW_H
 
+#include <time.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,7 +12,7 @@
 #include "statistics.h"
 #include "controller.h"
 
-#define MAIN_WINDOW_TITLE "Go"
+#define MAIN_WINDOW_TITLE "围甲比赛信息管理系统"
 #define MAIN_WINDOW_DEFAULT_WIDTH_MD 500
 #define MAIN_WINDOW_DEFAULT_HEIGHT_MD 600
 #define MAIN_WINDOW_DEFAULT_WIDTH_LG 950
@@ -25,7 +26,7 @@
 #define UNIFORM_COLUMN_MARGIN 2
 
 typedef struct _inputChain {
-    GtkEntry *input;
+    GtkWidget *input;
     struct _inputChain *next;
 } InputChain;
 
@@ -37,6 +38,8 @@ GtkWidget *goMenu;
 
 GtkWidget *goMenuSystem;
 GtkWidget *goMenuSystemSub;
+GtkWidget *goMenuSystemBackup;
+GtkWidget *goMenuSystemRecover;
 GtkWidget *goMenuSystemgoViewLoad;
 GtkWidget *goMenuSystemgoViewQuit;
 
@@ -78,6 +81,10 @@ GtkWidget *goMenuStatClub;
 GtkWidget *goMenuStatPlayer;
 GtkWidget *goMenuStatGrade;
 GtkWidget *goMenuStatClubDetails;
+
+GtkWidget *goMenuHelp;
+GtkWidget *goMenuHelpSub;
+GtkWidget *goMenuHelpAbout;
 
 GtkWidget *goClubNameQueryDialog;
 GtkWidget *goPlayerNameQueryDialog;
@@ -156,11 +163,24 @@ void goAddClub(GtkWidget *widget, gpointer *var);
 void goAddPlayer(GtkWidget *widget, gpointer *var);
 void goAddGame(GtkWidget *widget, gpointer *var);
 
+void goViewDeleteClub(GtkWidget *widget, gpointer *var);
+void goViewDeletePlayer(GtkWidget *widget, gpointer *var);
+void goViewDeleteGame(GtkWidget *widget, gpointer *var);
+
 void goViewShowWindow(GtkWidget *widget, gpointer *var);
 void goViewHideWindow(GtkWidget *widget, gpointer *var);
 void goDeleteWindow(GtkWidget *widget, gpointer *var);
 void goViewQuit(GtkWidget *widget, gpointer *window);
 void goViewLoad(GtkWidget *widget, gpointer *window);
+void goViewBackup(GtkWidget *widget, gpointer *var);
+void goViewRecover(GtkWidget *widget, gpointer *var);
 void goInitWindows(int *argc, char ***argv);
+
+void goRefreshEditClubMenu(void);
+void goRefreshEditPlayerMenu(void);
+void goRefreshEditGameMenu(void);
+void goViewAbout(GtkWidget *widget, gpointer *var);
+
+GdkPixbuf *createPixBuf(const gchar* filename);
 
 #endif

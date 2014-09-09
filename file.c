@@ -1,5 +1,14 @@
+/**
+ * 
+ */
 #include "file.h"
 
+/**
+ * 
+ * @param  fin  [description]
+ * @param  dest [description]
+ * @return      [description]
+ */
 int readString(FILE *fin, char *dest)
 {
     if (!fin || !dest)
@@ -26,6 +35,11 @@ int readString(FILE *fin, char *dest)
     return i;
 }
 
+/**
+ * 
+ * @param fin [description]
+ * @param c   [description]
+ */
 void ignoreChar(FILE *fin, char c)
 {
     if (!fin)

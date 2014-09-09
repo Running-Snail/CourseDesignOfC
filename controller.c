@@ -132,13 +132,52 @@ Game *goReadGameLine(FILE *fin)
 }
 
 /**
+ * 向文件中输出一行俱乐部信息
+ * @param fout 要输出的文件
+ * @param c    要输出的俱乐部指针
+ */
+void goWriteClubLine(FILE *fout, Club *c)
+{
+    if (!c || !fout)
+        return;
+
+    fprintf(fout, "\"%s\",\"%s\"\n", c->name, c->coach);
+}
+
+/**
+ * 向文件中输出一行选手信息
+ * @param fout 要输出的文件
+ * @param p    要输出的选手指针
+ */
+void goWritePlayerLine(FILE *fout, Player *p)
+{
+    if (!p || !fout)
+        return;
+
+    fprintf(fout, "\"%s\",\"%s\",%d\n", p->name, p->clubName, p->grade);
+}
+
+/**
+ * 向文件中输出一行比赛信息
+ * @param fout 要输出的文件
+ * @param g    要输出的比赛
+ */
+void goWriteGameLine(FILE *fout, Game *g)
+{
+    if (!g || !fout)
+        return;
+
+    fprintf(fout, "%d,%d,\"%s\",\"%s\",%d\n", g->no, g->type, g->blackPlayer, g->whitePlayer, g->result);
+}
+
+/**
  * 载入数据
  * @param  error 错误信息返回
  * @return 读取成功后返回三向链表头指针
  */
-ClubList *goLoadData(int *error)
+ClubList *goLoadData(const char *clubFileName, const char *playerFileName, const char *gameFileName)
 {
-    int clubNum, playerNum, gagoMenum;
+    int clubNum, playerNum, gameNum;
     int i;
     Club *c;
     Player *p;
@@ -148,16 +187,23 @@ ClubList *goLoadData(int *error)
     games = createDynamicArray();
     Variant *v;
 
-    //Open files
-    FILE *clubFile = fopen(CLUB_FILENAME, "r");
-    FILE *playerFile = fopen(PLAYER_FILENAME, "r");
-    FILE *gameFile = fopen(GAME_FILENAME, "r");
-    //Read numbers
+    //检查文件名
+    if (!clubFileName || !playerFileName || !gameFileName
+        || strlen(clubFileName)<=0
+        || strlen(playerFileName)<=0
+        || strlen(gameFileName)<=0)
+        return NULL;
+
+    //打开文件
+    FILE *clubFile = fopen(clubFileName, "r");
+    FILE *playerFile = fopen(playerFileName, "r");
+    FILE *gameFile = fopen(gameFileName, "r");
+    //读取数量
     fscanf(clubFile, "%d", &clubNum);
     fscanf(playerFile, "%d", &playerNum);
-    fscanf(gameFile, "%d", &gagoMenum);
+    fscanf(gameFile, "%d", &gameNum);
 
-    //Read data
+    //读取俱乐部数据
     for (i=0; i<clubNum; i++) {
         c = goReadClubLine(clubFile);
         c->id = i;
@@ -166,6 +212,7 @@ ClubList *goLoadData(int *error)
         dynamicInsert(&clubs, i, v);
     }
 
+    //读取选手数据
     for (i=0; i<playerNum; i++) {
         p = goReadPlayerLine(playerFile);
         p->id = i;
@@ -176,7 +223,8 @@ ClubList *goLoadData(int *error)
 
     maxGameNo = 0;
 
-    for (i=0; i<gagoMenum; i++) {
+    //读取比赛数据
+    for (i=0; i<gameNum; i++) {
         g = goReadGameLine(gameFile);
         g->id = i;
         v = createVariant();
@@ -186,8 +234,10 @@ ClubList *goLoadData(int *error)
             maxGameNo = g->no;
     }
 
+    //复制一个选手信息
     dynamicDeepCopy(&sortedPlayers, players);
 
+    //创建链表
     data = goCreateLists(clubs, players, games);
     return data;
 }
@@ -211,21 +261,20 @@ ClubList *goCreateLists(DynamicArray *clubs, DynamicArray *players, DynamicArray
     GameListNode *gl;
     Variant *v;
 
-    //Create the list of clubs
+    //创建链表头
     clubListHead = goCreateClubList();
 
-    //Insert every club into the list
+    //插入链表
     for (i=0; i<clubs->arrayLen; i++) {
         v = dynamicGet(clubs, i);
         c = (Club *)(v->v.pVoid);
         cl = goCreateClubListNode();
         cl->data = c;
-        //Create empty list of players who are in the club
-        cl->playerListHead = goCreatePlayerList();
+        //cl->playerListHead = goCreatePlayerList();
         goInsertClubList(clubListHead, cl);
     }
 
-    //Construct player list
+    //创建选手信息链
     for (i=0; i<players->arrayLen; i++) {
         v = dynamicGet(players, i);
         p = (Player *)(v->v.pVoid);
@@ -306,13 +355,15 @@ char *trim(char *str)
 {
     char *end;
 
-    while(isspace(*str)) str++;
+    while(*str == ' ') str++;
+    //while(isspace(*str)) str++;
 
     if (*str == 0)
         return str;
 
     end = str + strlen(str) -1;
-    while (end > str && isspace(*end))
+    while (end > str && (*end==' '))
+    //while (end > str && isspace(*end))
         end--;
 
     *(end+1) = 0;
@@ -320,6 +371,11 @@ char *trim(char *str)
     return str;
 }
 
+/**
+ * 更新数据
+ * @param  head 三向链表头
+ * @return      更新数据后的三向链表表头指针
+ */
 ClubList *goRefreshData(ClubList *head)
 {
     ClubListNode *cl;
@@ -328,29 +384,39 @@ ClubList *goRefreshData(ClubList *head)
     Club *c;
     Player *p;
     Game *g;
+    Variant *v;
+    //没有数据时显示未指定
+    char noAssigned[] = "未指定";
+    int i;
 
     if (!head)
         return NULL;
 
     cl = head->next;
 
+    //遍历俱乐部
     while (cl) {
         pl = cl->playerListHead->next;
         c = cl->data;
 
+        //便利俱乐部里的选手
         while (pl) {
             gl = pl->gameListHead->next;
             p = pl->data;
 
+            //如果俱乐部被修改过
             if (c->changed) {
+                //更新数据
                 free(p->clubName);
                 p->clubName = (char *)malloc(sizeof(char)*strlen(c->name));
                 strcpy(p->clubName, c->name);
             }
 
+            //遍历选手的每场比赛
             while (gl) {
                 g = gl->data;
 
+                //如果选手被修改过
                 if (p->changed) {
                     if (p->id == g->blackPlayerId) {
                         free(g->blackPlayer);
@@ -364,14 +430,248 @@ ClubList *goRefreshData(ClubList *head)
                 }
                 gl = gl->next;
             }
+            //恢复
             p->changed = 0;
             pl = pl->next;
         }
+        //恢复
         c->changed = 0;
         cl = cl->next;
+    }
+
+    //更新动态数组内容
+    if (clubs && players && games) {
+        for (i=0; i<players->arrayLen; i++) {
+            v = dynamicGet(players, i);
+            //跳过已被删除的选手
+            if (!v->v.pVoid)
+                continue;
+            p = (Player *)(v->v.pVoid);
+            //俱乐部不存在了
+            if (!dynamicGet(clubs, p->clubId)->v.pVoid) {
+                p->clubId = -1;
+                free(p->clubName);
+                p->clubName = (char *)malloc(sizeof(char)*strlen(noAssigned));
+                strcpy(p->clubName, noAssigned);
+            }
+        }
+
+        for (i=0; i<games->arrayLen; i++) {
+            v = dynamicGet(games, i);
+            //跳过已被删除的比赛
+            if (!v->v.pVoid)
+                continue;
+            g = (Game *)(v->v.pVoid);
+            //黑方选手不存在了
+            if (!dynamicGet(players, g->blackPlayerId)->v.pVoid) {
+                g->blackPlayerId = -1;
+                free(g->blackPlayer);
+                g->blackPlayer = (char *)malloc(sizeof(char)*strlen(noAssigned));
+                strcpy(g->blackPlayer, noAssigned);
+            }
+            //白方选手不存在了
+            if (!dynamicGet(players, g->whitePlayerId)->v.pVoid) {
+                g->whitePlayerId = -1;
+                free(g->whitePlayer);
+                g->whitePlayer = (char *)malloc(sizeof(char)*strlen(noAssigned));
+                strcpy(g->whitePlayer, noAssigned);
+            }
+        }
     }
 
     goViewStated = 0;
 
     return head;
+}
+
+/**
+ * 删除俱乐部
+ * @param head   要删除俱乐部的十字三向链
+ * @param clubId 俱乐部ID
+ */
+void goDeleteClub(ClubList *head, int clubId)
+{
+    Variant *v;
+    Club *c;
+    ClubList *cl;
+    if (!head || !clubs)
+        return;
+
+    v = dynamicGet(clubs, clubId);
+    if (!v)
+        return;
+
+    //找到clubID对应的链表中的结点
+    c = (Club *)(v->v.pVoid);
+    cl = head->next;
+    while (cl) {
+        if (c==cl->data)
+            break;
+        cl = cl->next;
+    }
+
+    //清空动态数组中相应位置
+    dynamicInsert(&clubs, clubId, NULL);
+    //从链表中删除
+    goDeleteNodeClubList(head, cl);
+    //更新数据
+    goRefreshData(head);
+}
+
+/**
+ * 删除选手
+ * @param head     要删除的三向十字链
+ * @param playerId 要删除选手的ID
+ */
+void goDeletePlayer(ClubList *head, int playerId)
+{
+    Variant* v;
+    ClubList *cl;
+    Player *p;
+    PlayerList *pl;
+    int flag = 1;
+    if (!head || !players)
+        return;
+
+    v = dynamicGet(players, playerId);
+    if (!v)
+        return;
+
+    //找到playerID对应的选手链表结点
+    p = (Player *)(v->v.pVoid);
+    cl = head->next;
+    //flag break控制找到就跳出循环
+    while (cl && flag) {
+        pl = cl->playerListHead->next;
+        while (pl && flag) {
+            if (p == pl->data) {
+                flag = 0;
+                break;
+            }
+            pl = pl->next;
+        }
+        if (!flag)
+            break;
+        cl = cl->next;
+    }
+
+    //清空动态数组中的相应位置
+    dynamicInsert(&players, playerId, NULL);
+    //从链表中删除结点
+    goDeleteNodePlayerList(cl->playerListHead, pl);
+    //更新数据
+    goRefreshData(head);
+}
+
+/**
+ * 删除比赛
+ * @param head   要删除的三向链表
+ * @param gameId 要删除的比赛的ID
+ */
+void goDeleteGame(ClubList *head, int gameId)
+{
+    Variant *v;
+    Game *g;
+    ClubListNode *cl;
+    GameListNode *gl;
+    PlayerListNode *pl;
+    int flag = 1;
+    if (!head || !games)
+        return;
+
+    v = dynamicGet(games, gameId);
+    if (!v)
+        return;
+
+    g = (Game *)(v->v.pVoid);
+    cl = head->next;
+    //删除对应结点
+    while (cl && flag) {
+        pl = cl->playerListHead->next;
+        while (pl && flag) {
+            gl = pl->gameListHead->next;
+            while (gl && flag) {
+                if (g == gl->data) {
+                    goDeleteNodeGameList(pl->gameListHead, gl);
+                    //flag = 0;
+                    break;
+                }
+                gl = gl->next;
+            }
+            if (!flag)
+                break;
+            pl = pl->next;
+        }
+        if (!flag)
+            break;
+        cl = cl->next;
+    }
+
+    dynamicInsert(&games, gameId, NULL);
+
+    goRefreshData(head);
+}
+
+/**
+ * 备份数据
+ */
+void goBackup(void)
+{
+    int i, num;
+    Variant *v;
+    if (!clubs || !players || !games)
+        return;
+
+    FILE *clubFile = fopen(CLUB_BACKUP_FILENAME, "w");
+    FILE *playerFile = fopen(PLAYER_BACKUP_FILENAME, "w");
+    FILE *gameFile = fopen(GAME_BACKUP_FILENAME, "w");
+
+    //检查可用club数量
+    num = 0;
+    for (i=0; i<clubs->arrayLen; i++) {
+        v = dynamicGet(clubs, i);
+        if (v->v.pVoid)
+            num++;
+    }
+    fprintf(clubFile, "%d\n", num);
+
+    //检查可用的选手数
+    num = 0;
+    for (i=0; i<players->arrayLen; i++) {
+        v = dynamicGet(players, i);
+        if (v->v.pVoid)
+            num++;
+    }
+    fprintf(playerFile, "%d\n", num);
+
+    //检查可用的比赛数
+    num = 0;
+    for (i=0; i<games->arrayLen; i++) {
+        v = dynamicGet(games, i);
+        if (v->v.pVoid)
+            num++;
+    }
+    fprintf(gameFile, "%d\n", num);
+
+    //输出俱乐部
+    for (i=0; i<clubs->arrayLen; i++) {
+        v = dynamicGet(clubs, i);
+        goWriteClubLine(clubFile, (Club *)(v->v.pVoid));
+    }
+
+    //输出选手
+    for (i=0; i<players->arrayLen; i++) {
+        v = dynamicGet(players, i);
+        goWritePlayerLine(playerFile, (Player *)(v->v.pVoid));
+    }
+
+    //输出比赛
+    for (i=0; i<games->arrayLen; i++) {
+        v = dynamicGet(games, i);
+        goWriteGameLine(gameFile, (Game *)(v->v.pVoid));
+    }
+
+    fclose(clubFile);
+    fclose(playerFile);
+    fclose(gameFile);
 }

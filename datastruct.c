@@ -328,6 +328,36 @@ ClubList *goInsertClubList(ClubList *head, ClubListNode *node)
 }
 
 /**
+ * 从俱乐部信息链中删除结点
+ * @param  head 俱乐部信息链链表头
+ * @param  node 要删除的结点
+ * @return      删除后的俱乐部信息链
+ */
+ClubList *goDeleteNodeClubList(ClubList *head, ClubListNode *node)
+{
+    //链表前一结点指针和当前结点指针
+    ClubListNode *prev, *p;
+    if (!head || !node)
+        return NULL;
+
+    //遍历寻找结点
+    prev = head;
+    p = head->next;
+    while (p) {
+        //找到就删除结点
+        if (p==node) {
+            prev->next = p->next;
+            p->next = NULL;
+            break;
+        }
+        prev = p;
+        p = p->next;
+    }
+
+    return head;
+}
+
+/**
  * 创建选手信息链
  * @return 创建的选手信息链
  */
@@ -357,8 +387,32 @@ PlayerList *goInsertPlayerList(PlayerList *head, PlayerListNode *node)
     return head;
 }
 
+PlayerList *goDeleteNodePlayerList(PlayerList *head, PlayerListNode *node)
+{
+    //链表前一结点指针和当前结点指针
+    PlayerListNode *prev, *p;
+    if (!head || !node)
+        return NULL;
+
+    //遍历寻找结点
+    prev = head;
+    p = head->next;
+    while (p) {
+        //找到就删除结点
+        if (p == node) {
+            prev->next = p->next;
+            p->next = NULL;
+            break;
+        }
+        prev = p;
+        p = p->next;
+    }
+
+    return head;
+}
+
 /**
- * 闯将比赛信息链
+ * 创建比赛信息链
  * @return 创建的比赛信息链
  */
 GameList *goCreateGameList(void)
@@ -387,6 +441,36 @@ GameList *goInsertGameList(GameList *head, GameListNode *node)
 }
 
 /**
+ * 删除比赛信息链中的结点
+ * @param  head 比赛信息链
+ * @param  node 要删除的结点
+ * @return      删除后的比赛信息链
+ */
+GameList *goDeleteNodeGameList(GameList *head, GameListNode *node)
+{
+    //链表前一结点指针和当前结点指针
+    GameListNode *prev, *p;
+    if (!head || !node)
+        return NULL;
+
+    //遍历寻找结点
+    prev = head;
+    p = head->next;
+    while (p) {
+        //找到就删除结点
+        if (p == node) {
+            prev->next = p->next;
+            p->next = NULL;
+            break;
+        }
+        prev = p;
+        p = p->next;
+    }
+
+    return head;
+}
+
+/**
  * 根据选手id获取俱乐部id
  * @param  playerId 选手id
  * @return          俱乐部id
@@ -403,10 +487,10 @@ int clubIdByPlayerId(int playerId)
 }
 
 /**
- *
- * @param  head
- * @param  clubName
- * @return
+ * 根据俱乐部完整名称查找
+ * @param  head     俱乐部信息链
+ * @param  clubName 俱乐部完整名称
+ * @return          找到的俱乐部信息链结点,若没找到则为NULL
  */
 ClubListNode *goSearchClubName(ClubList *head, char *clubName)
 {
@@ -416,6 +500,7 @@ ClubListNode *goSearchClubName(ClubList *head, char *clubName)
 
     n = head->next;
     while (n) {
+        //比较成功则返回
         if (0 == strcmp(n->data->name, clubName))
             return n;
         n = n->next;
@@ -425,10 +510,10 @@ ClubListNode *goSearchClubName(ClubList *head, char *clubName)
 }
 
 /**
- *
- * @param  head
- * @param  playerName
- * @return
+ * 根据选手完整名称查找
+ * @param  head       选手信息链
+ * @param  playerName 选手完整名称
+ * @return            找到的选手信息链结点,若没找到则为NULL
  */
 PlayerListNode *goSearchPlayerName(ClubList *head, char *playerName)
 {
@@ -439,8 +524,10 @@ PlayerListNode *goSearchPlayerName(ClubList *head, char *playerName)
 
     cl = head->next;
     while (cl) {
+        //遍历每个俱乐部的选手信息链
         pl = cl->playerListHead->next;
         while (pl) {
+            //匹配则返回
             if (0==strcmp(pl->data->name, playerName))
                 return pl;
             pl = pl->next;
@@ -452,10 +539,10 @@ PlayerListNode *goSearchPlayerName(ClubList *head, char *playerName)
 }
 
 /**
- *
- * @param  clubs
- * @param  name
- * @return
+ * 模糊查找俱乐部名称
+ * @param  clubs 俱乐部动态数组
+ * @param  name  俱乐部名称
+ * @return       包含搜索结果的动态数组,如果不存在或有错误则返回NULL
  */
 DynamicArray *goQueryClubName(DynamicArray *clubs, char *name)
 {
@@ -467,10 +554,14 @@ DynamicArray *goQueryClubName(DynamicArray *clubs, char *name)
     if (!clubs)
         return NULL;
 
+    //创建搜索结果动态数组
     res = createDynamicArray();
 
     for (i=0; i<clubs->arrayLen; i++) {
         v = dynamicGet(clubs, i);
+        //跳过删除了的俱乐部
+        if (!v->v.pVoid)
+            continue;
         c = (Club *)(v->v.pVoid);
 
         if (strstr(c->name, name)!=NULL) {
@@ -482,10 +573,10 @@ DynamicArray *goQueryClubName(DynamicArray *clubs, char *name)
 }
 
 /**
- *
- * @param  players
- * @param  name
- * @return
+ * 模糊查找选手姓名
+ * @param  players 选手动态数组
+ * @param  name    选手的姓名
+ * @return         包含搜素结果的动态数组,如果不存在或有错误则返回NULL
  */
 DynamicArray *goQueryPlayerName(DynamicArray *players, char *name)
 {
@@ -497,10 +588,14 @@ DynamicArray *goQueryPlayerName(DynamicArray *players, char *name)
     if (!players)
         return NULL;
 
+    //创建搜索结果动态数组
     res = createDynamicArray();
 
     for (i=0; i<players->arrayLen; i++) {
         v = dynamicGet(players, i);
+        //跳过删除了的选手
+        if (!v->v.pVoid)
+            continue;
         p = (Player *)(v->v.pVoid);
 
         if (strstr(p->name, name)!=NULL) {
@@ -512,10 +607,10 @@ DynamicArray *goQueryPlayerName(DynamicArray *players, char *name)
 }
 
 /**
- *
- * @param  players
- * @param  name
- * @return
+ * 根据选手俱乐部模糊查找选手
+ * @param  players 选手动态数组
+ * @param  name    选手俱乐部的部分名称
+ * @return         包含搜素结果的动态数组,如果不存在或有错误则返回NULL
  */
 DynamicArray *goQueryPlayerClub(DynamicArray *players, char *name)
 {
@@ -527,10 +622,14 @@ DynamicArray *goQueryPlayerClub(DynamicArray *players, char *name)
     if (!players)
         return NULL;
 
+    //创建搜索结果动态数组
     res = createDynamicArray();
 
     for (i=0; i<players->arrayLen; i++) {
         v = dynamicGet(players, i);
+        //跳过删除了的选手
+        if (!v->v.pVoid)
+            continue;
         p = (Player *)(v->v.pVoid);
 
         if (strstr(p->clubName, name)!=NULL) {
@@ -542,11 +641,11 @@ DynamicArray *goQueryPlayerClub(DynamicArray *players, char *name)
 }
 
 /**
- *
- * @param  players
- * @param  lower
- * @param  upper
- * @return
+ * 根据选手胜局数查找选手
+ * @param  players 选手动态数组
+ * @param  lower   下限
+ * @param  upper   上限
+ * @return         包含搜素结果的动态数组,如果不存在或有错误则返回NULL
  */
 DynamicArray *goQueryPlayerWin(DynamicArray *players, int lower, int upper)
 {
@@ -559,16 +658,22 @@ DynamicArray *goQueryPlayerWin(DynamicArray *players, int lower, int upper)
     if (!players)
         return NULL;
 
+    //设置默认下限
     if (lower < 0)
         lower = 0;
 
+    //设置默认上限
     if (upper < 0)
         upper = 99999999;
 
+    //创建搜索结果动态数组
     res = createDynamicArray();
 
     for (i=0; i<players->arrayLen; i++) {
         v = dynamicGet(players, i);
+        //跳过删除了的选手
+        if (!v->v.pVoid)
+            continue;
         p = (Player *)(v->v.pVoid);
 
         if (p->winNum >= lower && p->winNum <= upper) {
@@ -580,7 +685,7 @@ DynamicArray *goQueryPlayerWin(DynamicArray *players, int lower, int upper)
 }
 
 /**
- *
+ * 根据比赛结果查询结果
  * @param  games
  * @param  result
  * @return
@@ -595,10 +700,14 @@ DynamicArray *goQueryGameResult(DynamicArray *games, int result)
     if (!games)
         return NULL;
 
+    //创建搜索结果动态数组
     res = createDynamicArray();
 
     for (i=0; i<games->arrayLen; i++) {
         v = dynamicGet(games, i);
+        //跳过删除了的比赛
+        if (!v->v.pVoid)
+            continue;
         g = (Game *)(v->v.pVoid);
 
         if (g->result == result) {

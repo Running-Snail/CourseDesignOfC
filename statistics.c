@@ -1,5 +1,12 @@
+/**
+ * 
+ */
 #include "statistics.h"
 
+/**
+ * 统计局数
+ * @param head 要统计的三向十字链表表头
+ */
 void goStatRoundNum(ClubList *head)
 {
     Club *c;
@@ -62,6 +69,7 @@ void goStatRoundNum(ClubList *head)
                     }
                 }
 
+                //统计执黑胜局数和执白胜局数
                 if (p->id == g->blackPlayerId) {
                     c->blackRoundNum ++;
                 } else if (p->id == g->whitePlayerId) {
@@ -77,6 +85,12 @@ void goStatRoundNum(ClubList *head)
 
 }
 
+/**
+ * 统计比分
+ * @param maxGameNo 最大比赛场次
+ * @param games     比赛动态数组
+ * @param clubs     俱乐部动态数组
+ */
 void goStatScore(int32_t maxGameNo, DynamicArray *games, DynamicArray *clubs)
 {
     int i;
@@ -85,14 +99,17 @@ void goStatScore(int32_t maxGameNo, DynamicArray *games, DynamicArray *clubs)
     Player *p;
     Game *g;
 
-    GamegoViewStat *gameStatistics;
-    GamegoViewStat *gs;
+    //比赛统计局数结构体指针
+    GameScoreStat *gameStatistics;
+    GameScoreStat *gs;
 
     if (!games || !clubs)
         return;
 
-    gameStatistics = (GamegoViewStat *)malloc(sizeof(GamegoViewStat)*(maxGameNo)*(clubs->arrayLen));
+    //创建统计数据
+    gameStatistics = (GameScoreStat *)malloc(sizeof(GameScoreStat)*(maxGameNo)*(clubs->arrayLen));
 
+    //初始化统计数据
     for (i=0; i<maxGameNo*clubs->arrayLen; i++) {
         gs = gameStatistics+i;
         gs->roundScore = 0;
@@ -102,7 +119,8 @@ void goStatScore(int32_t maxGameNo, DynamicArray *games, DynamicArray *clubs)
     //遍历每一场比赛
     for (i=0; i<games->arrayLen; i++) {
         g = goGetGameById(i);
-
+        if (!g)
+            continue;
         //获取胜利的player
         //黑胜
         if (g->result == 0) {
@@ -120,13 +138,20 @@ void goStatScore(int32_t maxGameNo, DynamicArray *games, DynamicArray *clubs)
         }
     }
 
+    //遍历每一局比赛
     for (gameNo=0; gameNo<maxGameNo; gameNo++) {
         for (i=0; i<clubs->arrayLen; i++) {
+            //当前统计的数据
             gs = gameStatistics + gameNo*(clubs->arrayLen) + i;
             c = goGetClubById(i);
+            //俱乐部不存在则跳过
+            if (!c)
+                continue;
             if (gs->roundScore > 4) {
+                //局分大于4,直接场分加3
                 c->gameScore += 3;
             } else if (gs->roundScore == 4) {
+                //局分等于4的看哪方主将赢了
                 if (gs->doesMasterWin) {
                     c->gameScore += 2;
                 } else {
@@ -137,6 +162,10 @@ void goStatScore(int32_t maxGameNo, DynamicArray *games, DynamicArray *clubs)
     }
 }
 
+/**
+ * 统计选手胜率
+ * @param players 选手动态数组
+ */
 void goStatWinRate(DynamicArray *players)
 {
     Player *p;
@@ -145,32 +174,44 @@ void goStatWinRate(DynamicArray *players)
     if (!players)
         return;
 
+    //遍历每一个数组
     for (i=0; i<players->arrayLen; i++) {
         v = dynamicGet(players, i);
+        //跳过已被删除的选手
+        if (!v->v.pVoid)
+            continue;
         p = (Player *)(v->v.pVoid);
+        //计算胜率
         p->winRate = 0.0f;
         if (p->roundNum != 0)
             p->winRate = (float)(p->winNum)/(float)(p->roundNum);
     }
 }
 
+/**
+ * 把同一个俱乐部中的选手按照胜率排序
+ * @param head 选手信息链
+ */
 void sortPlayerWinRateOneClube(PlayerList *head)
 {
     PlayerListNode *prev1, *prev2, *maxPrev, *p1, *p2, *max, *p1next;
     if (!head)
         return;
 
-    //selection sort
+    //选择排序
     prev1 = head;
     p1 = head->next;
+    //外层遍历
     while (p1) {
+        //假定当前为最大值
         maxPrev = prev1;
         max = p1;
 
+        //内层遍历
         prev2 = p1;
         p2 = p1->next;
-
         while (p2) {
+            //如果找到更大的修改max结点指向
             if (p2->data->winRate > max->data->winRate) {
                 maxPrev = prev2;
                 max = p2;
@@ -180,27 +221,34 @@ void sortPlayerWinRateOneClube(PlayerList *head)
             p2 = p2->next;
         }
 
-        //swap
+        //交换
         if (max != p1) {
-            // fix bug
+            //当p1和maxPrev相等时要修复
             if (p1 == maxPrev)
                 p1next = p1;
             else
                 p1next = p1->next;
 
+            //交换
             prev1->next = max;
             maxPrev->next = p1;
             p1->next = max->next;
             max->next = p1next;
-
+            //交换后p1到了max后面
+            //重新指向前面
             p1 = max;
         }
 
+        //移向下一个结点
         prev1 = p1;
         p1 = p1->next;
     }
 }
 
+/**
+ * 在整个选手动态数组中根据胜率排序
+ * @param players 
+ */
 void goSortAllPlayers(DynamicArray *players)
 {
     int i, j;
@@ -208,13 +256,23 @@ void goSortAllPlayers(DynamicArray *players)
     Variant *v, *tmp;
     Player *p, *maxPlayer;
 
+    //选择排序
     for (i=0; i<players->arrayLen; i++) {
         maxI = i;
         v = dynamicGet(players, i);
+        //跳过已删除的选手
+        if (!v->v.pVoid)
+            continue;
+        
         maxPlayer = (Player *)(v->v.pVoid);
         for (j=i+1; j<players->arrayLen; j++) {
             v = dynamicGet(players, j);
+            //跳过已删除的选手
+            if (!v->v.pVoid)
+                continue;
+
             p = (Player *)(v->v.pVoid);
+            //比较胜率
             if (p->winRate > maxPlayer->winRate) {
                 maxI = j;
                 v = dynamicGet(players, j);
@@ -222,7 +280,7 @@ void goSortAllPlayers(DynamicArray *players)
             }
         }
 
-        //swap
+        //交换两者
         if (maxI != i) {
             // tmp = i
             tmp = dynamicGet(players, i);
@@ -234,16 +292,26 @@ void goSortAllPlayers(DynamicArray *players)
     }
 }
 
+/**
+ * 对所有俱乐部中的选手进行胜率排序
+ * @param head 十字三向链表
+ */
 void sortPlayerWinRate(ClubList *head)
 {
     ClubListNode *cl;
     cl = head->next;
     while (cl) {
+        //对每个俱乐部的选手进行排序
         sortPlayerWinRateOneClube(cl->playerListHead);
         cl = cl->next;
     }
 }
 
+/**
+ * 获取主将
+ * @param  cl 俱乐部信息链
+ * @return    主将信息结点,没有找到或者cl是NULL则返回NULL
+ */
 PlayerListNode *getMaster(ClubListNode *cl)
 {
     Player *p;
@@ -251,8 +319,8 @@ PlayerListNode *getMaster(ClubListNode *cl)
     if (!cl)
         return NULL;
 
+    //遍历寻找主将
     pl = cl->playerListHead->next;
-
     while (pl) {
         p = pl->data;
         if (p->isMaster)
@@ -263,6 +331,12 @@ PlayerListNode *getMaster(ClubListNode *cl)
     return NULL;
 }
 
+/**
+ * 比较函数
+ * @param  cl1 比较的第一个结点
+ * @param  cl2 比较的第二个结点
+ * @return     比较的结果(0或1)
+ */
 int comp(ClubListNode *cl1, ClubListNode *cl2)
 {
     Club *c1, *c2;
@@ -326,6 +400,10 @@ int comp(ClubListNode *cl1, ClubListNode *cl2)
     return 0;
 }
 
+/**
+ * 给俱乐部排名
+ * @param head 俱乐部信息链
+ */
 void ranking(ClubList *head)
 {
     ClubListNode *prev1, *prev2, *maxPrev, *max, *p1, *p2, *p1next;
@@ -333,6 +411,7 @@ void ranking(ClubList *head)
     if (!head)
         return;
 
+    //遍历选手
     prev1 = head;
     p1 = head->next;
     while (p1) {
@@ -378,6 +457,11 @@ void ranking(ClubList *head)
     }
 }
 
+/**
+ * 
+ * @param grades  [description]
+ * @param players [description]
+ */
 void goGradeStatistics(int *grades, DynamicArray *players)
 {
     int i;

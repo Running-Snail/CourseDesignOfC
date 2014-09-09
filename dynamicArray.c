@@ -4,6 +4,8 @@
  */
 #include "dynamicArray.h"
 
+Variant NULLVariant = {0,{0}};
+
 /**
  * 创建通用类型
  * @return 返回创建的通用类型
@@ -116,9 +118,17 @@ DynamicArray *dynamicInsert(DynamicArray **arr, int index, Variant *value)
         *arr = newArr;
     }
 
-    *(((*arr)->arr)+index) = *value;
-    //不要忘记了更新数组长度
-    (*arr)->arrayLen = index+1;
+    //*arr为DynamicArray一维指针
+    //(*arr)->arr为数组头指针
+    //+index移动头指针
+    if (value)
+        *(((*arr)->arr)+index) = *value;
+    else
+        *(((*arr)->arr)+index) = NULLVariant;
+    //(((*arr)->arr)+index) = value;
+    //不要忘记了更新数组长度(修复bug如果长于当前arrayLen才更新)
+    if (index >= (*arr)->arrayLen)
+        (*arr)->arrayLen = index+1;
 
     return *arr;
 }

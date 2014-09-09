@@ -8,7 +8,7 @@
 typedef struct _gamegoViewStat {
     int roundScore;    //场分
     int  doesMasterWin; //主将局赢没赢
-} GamegoViewStat;
+} GameScoreStat;
 
 int goViewStated;
 
